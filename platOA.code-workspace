@@ -1,0 +1,13 @@
+{
+    "folders": [
+		{
+			"path": "."
+		},
+		{
+			"path": "/Users/taojiang/Documents/work/token_server"
+		}
+	],
+    "settings": {
+        "git.ignoreLimitWarning": true
+    }
+}

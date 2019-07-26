@@ -1,0 +1,10 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+class PlatRedis {
+    constructor() {
+        this.redis_client = null;
+    }
+}
+exports.platRedis = new PlatRedis();
+//export var platRedisInst = platRedis.redis_client;
+//# sourceMappingURL=PlatRedis.js.map

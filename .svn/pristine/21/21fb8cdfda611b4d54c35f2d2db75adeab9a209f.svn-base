@@ -1,0 +1,18 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.TablesNames = {
+    sys_user: "sys_user",
+    sys_user_game: "sys_user_game",
+    sys_user_plat: "sys_user_plat",
+    sys_recharge_log: "sys_recharge_log"
+};
+exports.normal_sync_opt = {
+    force: false,
+};
+exports.normal_opt = {
+    timestamps: true,
+    createdAt: "createTime",
+    updatedAt: "updateTime",
+    deletedAt: "deleteTime"
+};
+//# sourceMappingURL=DAOBase.js.map

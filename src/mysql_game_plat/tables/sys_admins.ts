@@ -1,0 +1,43 @@
+import { Instance } from "sequelize";
+import sequelize = require("sequelize");
+import { TABLE_NAME } from "../../mysql_define/MySqlDefine";
+import { defColumnOpts, defSyncOpts } from "../../database/mysqlDao/MySqlClient";
+
+export var tableName:string = TABLE_NAME.sys_admins;
+
+export interface sys_admin_attr {
+   id?:number,                              //id
+   identity?:string,                        //账号
+   pwd?:string,                             //密码
+   material?:string,                        //游戏
+   createTime?:number,
+   updateTime?:number,
+   promise?:string,                          //权值
+}
+
+/**
+ * sequelize define 之后操作的对象 的类型定义
+ */
+export interface sys_admin_table extends Instance<sys_admin_attr>,sys_admin_attr {}
+
+export var column:sequelize.DefineAttributes = {
+    id:{type:sequelize.INTEGER(10),primaryKey:true},
+    identity:{type:sequelize.STRING(255),allowNull:true},
+    pwd:{type:sequelize.STRING(255),allowNull:true},
+    material:{type:sequelize.STRING(255),allowNull:true},
+    createTime:{type:sequelize.DATE,get(){
+        return new Date(this.getDataValue("createTime")).getTime();
+    }},
+    updateTime:{type:sequelize.DATE,get(){
+        return new Date(this.getDataValue("updateTime")).getTime();
+    }},
+    promise:{type:sequelize.ENUM, values: ['超级管理员','游戏管理员']},
+}
+
+/**
+ * Hook（也称为生命周期事件）是执行 sequelize 调用之前和之后调用的函数。 例如，如果要在保存模型之前始终设置值，可以添加一个 beforeUpdate hook。
+ */
+var hooks:sequelize.HooksDefineOptions<sys_admin_table> = {}
+
+export var opts:sequelize.DefineOptions<sys_admin_table> = defColumnOpts;
+export var sync_opt:sequelize.SyncOptions = defSyncOpts;

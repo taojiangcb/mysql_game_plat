@@ -1,0 +1,281 @@
+[2019-02-26T20:12:45.630] [INFO] info - redis 连接成功!! []
+[2019-02-26T20:12:45.661] [INFO] info - server runing on port 3005 []
+[2019-02-26T20:21:32.084] [INFO] info - redis 连接成功!! []
+[2019-02-26T20:21:32.117] [INFO] info - server runing on port 3005 []
+[2019-02-26T20:44:13.380] [INFO] info - redis 连接成功!! []
+[2019-02-26T20:44:13.412] [INFO] info - server runing on port 3005 []
+[2019-02-26T20:57:18.581] [INFO] info - redis 连接成功!! []
+[2019-02-26T20:57:18.612] [INFO] info - server runing on port 3005 []
+[2019-02-27T14:04:38.846] [INFO] info - redis 连接成功!! []
+[2019-02-27T14:04:39.167] [INFO] info - server runing on port 3007 []
+[2019-03-04T14:04:24.527] [INFO] info - redis 连接成功!! []
+[2019-03-04T14:04:24.782] [INFO] info - server runing on port 3007 []
+[2019-03-04T14:08:18.440] [INFO] info - redis 连接成功!! []
+[2019-03-04T14:08:18.479] [INFO] info - server runing on port 3007 []
+[2019-03-04T14:10:06.795] [INFO] info - redis 连接成功!! []
+[2019-03-04T14:10:06.831] [INFO] info - server runing on port 3007 []
+[2019-03-04T14:12:51.064] [INFO] info - redis 连接成功!! []
+[2019-03-04T14:12:51.095] [INFO] info - server runing on port 3007 []
+[2019-03-04T14:13:13.306] [INFO] info - redis 连接成功!! []
+[2019-03-04T14:13:14.910] [INFO] info - server runing on port 3007 []
+[2019-03-04T14:22:49.285] [INFO] info - redis 连接成功!! []
+[2019-03-04T14:22:49.338] [INFO] info - server runing on port 3007 []
+[2019-05-07T15:45:21.769] [INFO] info - redis 连接成功!! []
+[2019-05-07T15:45:21.985] [INFO] info - server runing on port 3007 []
+[2019-05-07T15:52:01.636] [INFO] info - redis 连接成功!! []
+[2019-05-07T15:52:01.673] [INFO] info - server runing on port 3007 []
+[2019-05-07T15:52:51.500] [INFO] info - redis 连接成功!! []
+[2019-05-07T15:52:51.535] [INFO] info - server runing on port 3007 []
+[2019-05-07T16:03:23.943] [INFO] info - redis 连接成功!! []
+[2019-05-07T16:03:23.974] [INFO] info - server runing on port 3007 []
+[2019-07-23T21:49:48.794] [INFO] info - redis 连接成功!! []
+[2019-07-23T22:03:09.632] [INFO] info - redis 连接成功!! []
+[2019-07-23T22:03:09.686] [INFO] info - server runing on port 3005 []
+[2019-07-23T22:08:02.246] [INFO] info - redis 连接成功!! []
+[2019-07-23T22:08:02.307] [INFO] info - server runing on port 3005 []
+[2019-07-23T22:08:23.286] [INFO] info - redis 连接成功!! []
+[2019-07-23T22:08:23.332] [INFO] info - server runing on port 3005 []
+[2019-07-23T22:09:09.609] [INFO] info - redis 连接成功!! []
+[2019-07-23T22:09:09.663] [INFO] info - server runing on port 3005 []
+[2019-07-23T22:09:28.131] [INFO] info - redis 连接成功!! []
+[2019-07-23T22:09:28.179] [INFO] info - server runing on port 3005 []
+[2019-07-23T22:10:08.773] [INFO] info - redis 连接成功!! []
+[2019-07-23T22:10:08.823] [INFO] info - server runing on port 3005 []
+[2019-07-23T22:10:32.390] [INFO] info - redis 连接成功!! []
+[2019-07-23T22:10:32.441] [INFO] info - server runing on port 3005 []
+[2019-07-23T22:11:50.047] [INFO] info - redis 连接成功!! []
+[2019-07-23T22:11:50.098] [INFO] info - server runing on port 3005 []
+[2019-07-23T22:15:37.600] [INFO] info - redis 连接成功!! []
+[2019-07-23T22:15:37.652] [INFO] info - server runing on port 3005 []
+[2019-07-23T22:16:41.987] [INFO] info - redis 连接成功!! []
+[2019-07-23T22:16:42.044] [INFO] info - server runing on port 3005 []
+[2019-07-23T22:17:48.067] [INFO] info - redis 连接成功!! []
+[2019-07-23T22:17:48.121] [INFO] info - server runing on port 3005 []
+[2019-07-23T22:19:18.965] [INFO] info - redis 连接成功!! []
+[2019-07-23T22:19:19.028] [INFO] info - server runing on port 3005 []
+[2019-07-23T22:26:57.266] [INFO] info - redis 连接成功!! []
+[2019-07-23T22:26:57.316] [INFO] info - server runing on port 3005 []
+[2019-07-23T22:33:02.201] [INFO] info - redis 连接成功!! []
+[2019-07-23T22:33:02.254] [INFO] info - server runing on port 3005 []
+[2019-07-23T22:35:30.880] [ERROR] error - ENOENT: no such file or directory, open '/Users/taojiang/Documents/work/platOAServer/bin/config_undefined.json' []
+[2019-07-23T22:35:30.885] [ERROR] error - Error: ENOENT: no such file or directory, open '/Users/taojiang/Documents/work/platOAServer/bin/config_undefined.json'
+    at Object.openSync (fs.js:443:3)
+    at Object.readFileSync (fs.js:343:35)
+    at Object.<anonymous> (/Users/taojiang/Documents/work/platOAServer/app.ts:95:44)
+    at Module._compile (internal/modules/cjs/loader.js:776:30)
+    at Object.Module._extensions..js (internal/modules/cjs/loader.js:787:10)
+    at Module.load (internal/modules/cjs/loader.js:653:32)
+    at tryModuleLoad (internal/modules/cjs/loader.js:593:12)
+    at Function.Module._load (internal/modules/cjs/loader.js:585:3)
+    at Module.require (internal/modules/cjs/loader.js:690:17)
+    at require (internal/modules/cjs/helpers.js:25:18)
+    at Object.<anonymous> (/Users/taojiang/Documents/work/platOAServer/src/test/db.test.ts:2:11)
+    at Module._compile (internal/modules/cjs/loader.js:776:30)
+    at Module.m._compile (/Users/taojiang/Documents/work/platOAServer/node_modules/_ts-node@7.0.1@ts-node/src/index.ts:439:23)
+    at Module._extensions..js (internal/modules/cjs/loader.js:787:10)
+    at Object.require.extensions.(anonymous function) [as .ts] (/Users/taojiang/Documents/work/platOAServer/node_modules/_ts-node@7.0.1@ts-node/src/index.ts:442:12)
+    at Module.load (internal/modules/cjs/loader.js:653:32)
+    at tryModuleLoad (internal/modules/cjs/loader.js:593:12)
+    at Function.Module._load (internal/modules/cjs/loader.js:585:3)
+    at Module.require (internal/modules/cjs/loader.js:690:17)
+    at require (internal/modules/cjs/helpers.js:25:18)
+    at /Users/taojiang/Documents/work/platOAServer/node_modules/_mocha@6.2.0@mocha/lib/mocha.js:334:36
+    at Array.forEach (<anonymous>)
+    at Mocha.loadFiles (/Users/taojiang/Documents/work/platOAServer/node_modules/_mocha@6.2.0@mocha/lib/mocha.js:331:14)
+    at Mocha.run (/Users/taojiang/Documents/work/platOAServer/node_modules/_mocha@6.2.0@mocha/lib/mocha.js:811:10)
+    at Object.exports.singleRun (/Users/taojiang/Documents/work/platOAServer/node_modules/_mocha@6.2.0@mocha/lib/cli/run-helpers.js:108:16)
+    at exports.runMocha (/Users/taojiang/Documents/work/platOAServer/node_modules/_mocha@6.2.0@mocha/lib/cli/run-helpers.js:142:13)
+    at Object.exports.handler.argv [as handler] (/Users/taojiang/Documents/work/platOAServer/node_modules/_mocha@6.2.0@mocha/lib/cli/run.js:292:3)
+    at Object.runCommand (/Users/taojiang/Documents/work/platOAServer/node_modules/_yargs@13.2.2@yargs/lib/command.js:242:26)
+    at Object.parseArgs [as _parseArgs] (/Users/taojiang/Documents/work/platOAServer/node_modules/_yargs@13.2.2@yargs/yargs.js:1087:28)
+    at Object.parse (/Users/taojiang/Documents/work/platOAServer/node_modules/_yargs@13.2.2@yargs/yargs.js:566:25)
+    at Object.exports.main (/Users/taojiang/Documents/work/platOAServer/node_modules/_mocha@6.2.0@mocha/lib/cli/cli.js:68:6)
+    at Object.<anonymous> (/Users/taojiang/Documents/work/platOAServer/node_modules/_mocha@6.2.0@mocha/bin/mocha:154:29)
+    at Module._compile (internal/modules/cjs/loader.js:776:30)
+    at Object.Module._extensions..js (internal/modules/cjs/loader.js:787:10)
+    at Module.load (internal/modules/cjs/loader.js:653:32)
+    at tryModuleLoad (internal/modules/cjs/loader.js:593:12)
+    at Function.Module._load (internal/modules/cjs/loader.js:585:3)
+    at Function.Module.runMain (internal/modules/cjs/loader.js:829:12)
+    at startup (internal/bootstrap/node.js:283:19)
+    at bootstrapNodeJSCore (internal/bootstrap/node.js:622:3) []
+[2019-07-23T22:38:08.568] [INFO] info - redis 连接成功!! []
+[2019-07-23T22:38:08.623] [INFO] info - server runing on port 3005 []
+[2019-07-24T10:16:46.551] [INFO] info - { Error: Redis connection to 47.100.202.222:6379 failed - read ETIMEDOUT
+    at TCP.onStreamRead (internal/stream_base_commons.js:111:27) errno: 'ETIMEDOUT', code: 'ETIMEDOUT', syscall: 'read' } []
+[2019-07-24T10:16:46.764] [INFO] info - reconnecting[object Object]|undefined []
+[2019-07-24T10:16:46.807] [INFO] info - redis 连接成功!! []
+[2019-07-24T12:28:26.124] [INFO] info - { Error: Redis connection to 47.100.202.222:6379 failed - read ETIMEDOUT
+    at TCP.onStreamRead (internal/stream_base_commons.js:111:27) errno: 'ETIMEDOUT', code: 'ETIMEDOUT', syscall: 'read' } []
+[2019-07-24T12:28:26.329] [INFO] info - reconnecting[object Object]|undefined []
+[2019-07-24T12:28:26.365] [INFO] info - redis 连接成功!! []
+[2019-07-24T14:40:30.824] [INFO] info - { Error: Redis connection to 47.100.202.222:6379 failed - read ETIMEDOUT
+    at TCP.onStreamRead (internal/stream_base_commons.js:111:27) errno: 'ETIMEDOUT', code: 'ETIMEDOUT', syscall: 'read' } []
+[2019-07-24T14:40:31.058] [INFO] info - reconnecting[object Object]|undefined []
+[2019-07-24T14:40:31.091] [INFO] info - redis 连接成功!! []
+[2019-07-24T16:53:24.862] [INFO] info - { Error: Redis connection to 47.100.202.222:6379 failed - read ETIMEDOUT
+    at TCP.onStreamRead (internal/stream_base_commons.js:111:27) errno: 'ETIMEDOUT', code: 'ETIMEDOUT', syscall: 'read' } []
+[2019-07-24T16:53:25.078] [INFO] info - reconnecting[object Object]|undefined []
+[2019-07-24T16:53:25.444] [INFO] info - redis 连接成功!! []
+[2019-07-24T19:05:17.864] [INFO] info - { Error: Redis connection to 47.100.202.222:6379 failed - read ETIMEDOUT
+    at TCP.onStreamRead (internal/stream_base_commons.js:111:27) errno: 'ETIMEDOUT', code: 'ETIMEDOUT', syscall: 'read' } []
+[2019-07-24T19:05:18.084] [INFO] info - reconnecting[object Object]|undefined []
+[2019-07-24T19:05:18.130] [INFO] info - redis 连接成功!! []
+[2019-07-24T20:42:10.933] [INFO] info - redis 连接成功!! []
+[2019-07-24T20:42:11.017] [INFO] info - server runing on port 3005 []
+[2019-07-24T20:42:11.020] [ERROR] error - listen EADDRINUSE: address already in use :::3005 []
+[2019-07-24T20:42:11.022] [ERROR] error - Error: listen EADDRINUSE: address already in use :::3005
+    at Server.setupListenHandle [as _listen2] (net.js:1279:14)
+    at listenInCluster (net.js:1327:12)
+    at Server.listen (net.js:1414:7)
+    at Application.listen (/Users/taojiang/Documents/work/platOAServer/node_modules/koa/lib/application.js:64:19)
+    at /Users/taojiang/Documents/work/platOAServer/bin/app.js:125:13
+    at Generator.next (<anonymous>)
+    at fulfilled (/Users/taojiang/Documents/work/platOAServer/bin/app.js:4:58)
+    at process._tickCallback (internal/process/next_tick.js:68:7) []
+[2019-07-24T20:44:02.771] [INFO] info - redis 连接成功!! []
+[2019-07-24T20:44:03.008] [INFO] info - server runing on port 3005 []
+[2019-07-24T20:44:03.010] [ERROR] error - listen EADDRINUSE: address already in use :::3005 []
+[2019-07-24T20:44:03.013] [ERROR] error - Error: listen EADDRINUSE: address already in use :::3005
+    at Server.setupListenHandle [as _listen2] (net.js:1279:14)
+    at listenInCluster (net.js:1327:12)
+    at Server.listen (net.js:1414:7)
+    at Application.listen (/Users/taojiang/Documents/work/platOAServer/node_modules/koa/lib/application.js:64:19)
+    at /Users/taojiang/Documents/work/platOAServer/bin/app.js:125:13
+    at Generator.next (<anonymous>)
+    at fulfilled (/Users/taojiang/Documents/work/platOAServer/bin/app.js:4:58)
+    at process._tickCallback (internal/process/next_tick.js:68:7) []
+[2019-07-24T20:54:11.155] [INFO] info - redis 连接成功!! []
+[2019-07-24T20:54:11.222] [INFO] info - server runing on port 3005 []
+[2019-07-24T20:55:53.692] [INFO] info - redis 连接成功!! []
+[2019-07-24T20:55:53.798] [INFO] info - server runing on port 3005 []
+[2019-07-24T22:14:04.434] [INFO] info - redis 连接成功!! []
+[2019-07-24T22:14:04.463] [INFO] info - server runing on port 3005 []
+[2019-07-24T22:14:04.466] [ERROR] error - listen EADDRINUSE: address already in use :::3005 []
+[2019-07-24T22:14:04.466] [ERROR] error - Error: listen EADDRINUSE: address already in use :::3005
+    at Server.setupListenHandle [as _listen2] (net.js:1279:14)
+    at listenInCluster (net.js:1327:12)
+    at Server.listen (net.js:1414:7)
+    at Application.listen (/Users/taojiang/Documents/work/platOAServer/node_modules/koa/lib/application.js:64:19)
+    at /Users/taojiang/Documents/work/platOAServer/app.ts:139:9
+    at Generator.next (<anonymous>)
+    at fulfilled (/Users/taojiang/Documents/work/platOAServer/bin/app.js:4:58)
+    at process._tickCallback (internal/process/next_tick.js:68:7) []
+[2019-07-24T22:18:32.608] [INFO] info - redis 连接成功!! []
+[2019-07-24T22:18:32.637] [INFO] info - server runing on port 3005 []
+[2019-07-24T22:18:32.639] [ERROR] error - listen EADDRINUSE: address already in use :::3005 []
+[2019-07-24T22:18:32.639] [ERROR] error - Error: listen EADDRINUSE: address already in use :::3005
+    at Server.setupListenHandle [as _listen2] (net.js:1279:14)
+    at listenInCluster (net.js:1327:12)
+    at Server.listen (net.js:1414:7)
+    at Application.listen (/Users/taojiang/Documents/work/platOAServer/node_modules/koa/lib/application.js:64:19)
+    at /Users/taojiang/Documents/work/platOAServer/app.ts:139:9
+    at Generator.next (<anonymous>)
+    at fulfilled (/Users/taojiang/Documents/work/platOAServer/bin/app.js:4:58)
+    at process._tickCallback (internal/process/next_tick.js:68:7) []
+[2019-07-24T22:18:59.710] [INFO] info - redis 连接成功!! []
+[2019-07-24T22:18:59.734] [INFO] info - server runing on port 3005 []
+[2019-07-24T22:21:42.919] [INFO] info - redis 连接成功!! []
+[2019-07-24T22:21:42.982] [INFO] info - server runing on port 3005 []
+[2019-07-24T22:25:30.299] [INFO] info - redis 连接成功!! []
+[2019-07-24T22:25:30.325] [INFO] info - server runing on port 3005 []
+[2019-07-24T22:28:10.061] [INFO] info - redis 连接成功!! []
+[2019-07-24T22:28:10.096] [INFO] info - server runing on port 3005 []
+[2019-07-24T22:32:41.481] [INFO] info - redis 连接成功!! []
+[2019-07-24T22:32:41.517] [INFO] info - server runing on port 3005 []
+[2019-07-24T22:34:07.504] [INFO] info - redis 连接成功!! []
+[2019-07-24T22:34:07.548] [INFO] info - server runing on port 3005 []
+[2019-07-24T22:36:37.706] [INFO] info - redis 连接成功!! []
+[2019-07-24T22:36:37.754] [INFO] info - server runing on port 3005 []
+[2019-07-24T22:36:41.920] [ERROR] error - app.address is not a function []
+[2019-07-24T22:36:41.921] [ERROR] error - TypeError: app.address is not a function
+    at Test.serverAddress (/Users/taojiang/Documents/work/platOAServer/node_modules/_supertest@4.0.2@supertest/lib/test.js:55:18)
+    at new Test (/Users/taojiang/Documents/work/platOAServer/node_modules/_supertest@4.0.2@supertest/lib/test.js:36:12)
+    at Object.obj.(anonymous function) [as post] (/Users/taojiang/Documents/work/platOAServer/node_modules/_supertest@4.0.2@supertest/index.js:25:14)
+    at Timeout.callback [as _onTimeout] (/Users/taojiang/Documents/work/platOAServer/src/test/db.test.ts:9:18)
+    at ontimeout (timers.js:436:11)
+    at tryOnTimeout (timers.js:300:5)
+    at listOnTimeout (timers.js:263:5)
+    at Timer.processTimers (timers.js:223:10) []
+[2019-07-24T22:43:56.210] [INFO] info - redis 连接成功!! []
+[2019-07-24T22:43:56.461] [INFO] info - server runing on port 3005 []
+[2019-07-24T22:44:01.349] [ERROR] error - Cannot read property 'address' of undefined []
+[2019-07-24T22:44:01.350] [ERROR] error - TypeError: Cannot read property 'address' of undefined
+    at Test.serverAddress (/Users/taojiang/Documents/work/platOAServer/node_modules/_supertest@4.0.2@supertest/lib/test.js:55:18)
+    at new Test (/Users/taojiang/Documents/work/platOAServer/node_modules/_supertest@4.0.2@supertest/lib/test.js:36:12)
+    at Object.obj.(anonymous function) [as post] (/Users/taojiang/Documents/work/platOAServer/node_modules/_supertest@4.0.2@supertest/index.js:25:14)
+    at Timeout.callback [as _onTimeout] (/Users/taojiang/Documents/work/platOAServer/src/test/db.test.ts:9:18)
+    at ontimeout (timers.js:436:11)
+    at tryOnTimeout (timers.js:300:5)
+    at listOnTimeout (timers.js:263:5)
+    at Timer.processTimers (timers.js:223:10) []
+[2019-07-24T22:45:30.771] [INFO] info - redis 连接成功!! []
+[2019-07-24T22:45:30.864] [INFO] info - server runing on port 3005 []
+[2019-07-24T22:45:30.868] [ERROR] error - listen EADDRINUSE: address already in use :::3005 []
+[2019-07-24T22:45:30.874] [ERROR] error - Error: listen EADDRINUSE: address already in use :::3005
+    at Server.setupListenHandle [as _listen2] (net.js:1279:14)
+    at listenInCluster (net.js:1327:12)
+    at Server.listen (net.js:1414:7)
+    at Application.listen (/Users/taojiang/Documents/work/platOAServer/node_modules/koa/lib/application.js:64:19)
+    at /Users/taojiang/Documents/work/platOAServer/bin/app.js:127:23
+    at Generator.next (<anonymous>)
+    at fulfilled (/Users/taojiang/Documents/work/platOAServer/bin/app.js:4:58)
+    at process._tickCallback (internal/process/next_tick.js:68:7) []
+[2019-07-24T22:45:44.340] [INFO] info - redis 连接成功!! []
+[2019-07-24T22:45:44.440] [INFO] info - server runing on port 3005 []
+[2019-07-24T22:49:52.875] [INFO] info - redis 连接成功!! []
+[2019-07-24T22:49:53.093] [INFO] info - server runing on port 3005 []
+[2019-07-24T22:53:09.473] [INFO] info - redis 连接成功!! []
+[2019-07-24T22:53:09.748] [INFO] info - server runing on port 3005 []
+[2019-07-24T22:54:51.864] [INFO] info - redis 连接成功!! []
+[2019-07-24T22:54:52.066] [INFO] info - server runing on port 3005 []
+[2019-07-24T23:00:44.907] [INFO] info - redis 连接成功!! []
+[2019-07-24T23:00:45.101] [INFO] info - server runing on port 3005 []
+[2019-07-24T23:03:03.248] [INFO] info - redis 连接成功!! []
+[2019-07-24T23:03:03.485] [INFO] info - server runing on port 3005 []
+[2019-07-24T23:05:22.440] [INFO] info - redis 连接成功!! []
+[2019-07-24T23:05:22.629] [INFO] info - server runing on port 3005 []
+[2019-07-24T23:08:33.882] [INFO] info - redis 连接成功!! []
+[2019-07-24T23:08:33.948] [INFO] info - server runing on port 3005 []
+[2019-07-24T23:11:03.685] [INFO] info - redis 连接成功!! []
+[2019-07-24T23:11:03.769] [INFO] info - server runing on port 3005 []
+[2019-07-24T23:12:34.899] [INFO] info - redis 连接成功!! []
+[2019-07-24T23:12:35.170] [INFO] info - server runing on port 3005 []
+[2019-07-24T23:13:19.366] [INFO] info - redis 连接成功!! []
+[2019-07-24T23:13:19.465] [INFO] info - server runing on port 3005 []
+[2019-07-25T06:50:33.151] [INFO] info - { Error: Redis connection to 47.100.202.222:6379 failed - read ETIMEDOUT
+    at TCP.onStreamRead (internal/stream_base_commons.js:111:27) errno: 'ETIMEDOUT', code: 'ETIMEDOUT', syscall: 'read' } []
+[2019-07-25T06:50:33.436] [INFO] info - reconnecting[object Object]|undefined []
+[2019-07-25T06:50:33.532] [INFO] info - redis 连接成功!! []
+[2019-07-25T11:01:29.482] [INFO] info - { Error: Redis connection to 47.100.202.222:6379 failed - read ETIMEDOUT
+    at TCP.onStreamRead (internal/stream_base_commons.js:111:27) errno: 'ETIMEDOUT', code: 'ETIMEDOUT', syscall: 'read' } []
+[2019-07-25T11:01:29.722] [INFO] info - reconnecting[object Object]|undefined []
+[2019-07-25T11:01:29.789] [INFO] info - redis 连接成功!! []
+[2019-07-25T14:12:01.973] [INFO] info - { Error: Redis connection to 47.100.202.222:6379 failed - read ETIMEDOUT
+    at TCP.onStreamRead (internal/stream_base_commons.js:111:27) errno: 'ETIMEDOUT', code: 'ETIMEDOUT', syscall: 'read' } []
+[2019-07-25T14:12:02.206] [INFO] info - reconnecting[object Object]|undefined []
+[2019-07-25T14:12:02.243] [INFO] info - redis 连接成功!! []
+[2019-07-26T09:31:10.402] [INFO] info - redis 连接成功!! []
+[2019-07-26T09:31:10.431] [INFO] info - server runing on port 3005 []
+[2019-07-26T09:32:03.231] [INFO] info - redis 连接成功!! []
+[2019-07-26T09:32:03.248] [INFO] info - server runing on port 3005 []
+[2019-07-26T09:33:02.595] [INFO] info - redis 连接成功!! []
+[2019-07-26T09:33:02.623] [INFO] info - server runing on port 3005 []
+[2019-07-26T09:33:45.951] [INFO] info - redis 连接成功!! []
+[2019-07-26T09:33:45.986] [INFO] info - server runing on port 3005 []
+[2019-07-26T09:34:49.032] [INFO] info - redis 连接成功!! []
+[2019-07-26T09:34:49.066] [INFO] info - server runing on port 3005 []
+[2019-07-26T09:40:23.624] [INFO] info - redis 连接成功!! []
+[2019-07-26T09:40:23.775] [INFO] info - server runing on port 3005 []
+[2019-07-26T09:41:20.167] [INFO] info - redis 连接成功!! []
+[2019-07-26T09:41:20.359] [INFO] info - server runing on port 3005 []
+[2019-07-26T09:42:53.525] [INFO] info - redis 连接成功!! []
+[2019-07-26T09:42:53.649] [INFO] info - server runing on port 3005 []
+[2019-07-26T09:46:21.186] [INFO] info - redis 连接成功!! []
+[2019-07-26T09:46:21.317] [INFO] info - server runing on port 3005 []
+[2019-07-26T09:48:34.322] [INFO] info - redis 连接成功!! []
+[2019-07-26T09:48:34.435] [INFO] info - server runing on port 3005 []
+[2019-07-26T12:00:03.892] [INFO] info - { Error: Redis connection to 47.100.202.222:6379 failed - read ETIMEDOUT
+    at TCP.onStreamRead (internal/stream_base_commons.js:111:27) errno: 'ETIMEDOUT', code: 'ETIMEDOUT', syscall: 'read' } []
+[2019-07-26T12:00:04.108] [INFO] info - reconnecting[object Object]|undefined []
+[2019-07-26T12:00:04.149] [INFO] info - redis 连接成功!! []

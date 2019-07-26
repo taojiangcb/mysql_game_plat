@@ -1,0 +1,71 @@
+"use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const PlatBase_1 = require("./PlatBase");
+const RespBase_1 = require("../resp/RespBase");
+const DBTools_1 = require("../database/DBTools");
+const ErrorCode_1 = require("../config/ErrorCode");
+const Define_1 = require("../config/Define");
+class PlatTest extends PlatBase_1.PlatBaseServer {
+    constructor() {
+        super();
+    }
+    login(body) {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (body.platUser) {
+                var signaData = true;
+                let userId = body.platUser.openId;
+                let userKey = body.platUser.openKey;
+                let platuser = yield DBTools_1.DBTools.getPlatUser(body.plat, userId);
+                if (platuser) {
+                    let zxId = platuser.zx_Id;
+                    let user_game = yield DBTools_1.DBTools.sys_user_game_table().findOne({
+                        where: { zx_id: zxId }
+                    });
+                    if (!user_game)
+                        return new RespBase_1.RespBase(false, ErrorCode_1.ErrorCode.ERR_1001);
+                    let sys_user = yield DBTools_1.DBTools.sys_user_table().findOne({
+                        where: { zx_id: zxId }
+                    });
+                    if (!sys_user)
+                        return new RespBase_1.RespBase(false, ErrorCode_1.ErrorCode.ERR_1002);
+                    let change = false;
+                    if (sys_user.avatar != body.avatar && body.avatar) {
+                        sys_user.avatar = body.avatar;
+                        change = true;
+                    }
+                    if (sys_user.name != body.name && body.name) {
+                        sys_user.name = body.name;
+                        change = true;
+                    }
+                    if (change) {
+                        yield sys_user.save();
+                    }
+                    let token = yield this.mToken(zxId);
+                    let respData = {
+                        user: new Define_1.SDKUser(zxId, body.name, body.avatar, token, sys_user.money),
+                        platUser: new Define_1.PlatUser(userId, userKey)
+                    };
+                    return new RespBase_1.RespBase(true, 0, respData);
+                }
+                else {
+                    let zxId = this.generateId();
+                    let token = yield this.mToken(zxId);
+                    return yield DBTools_1.DBTools.createUser(body.plat, userId, zxId, body.gameId, body.name, body.avatar, userKey);
+                }
+            }
+            else {
+                return new RespBase_1.RespBase(false, ErrorCode_1.ErrorCode.ERR_1001);
+            }
+        });
+    }
+}
+exports.PlatTest = PlatTest;
+//# sourceMappingURL=PlatTest.js.map

@@ -1,0 +1,96 @@
+"use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const MySqlDefine_1 = require("../mysql_game_plat/MySqlDefine");
+const DB_1 = require("../mysql_game_plat/DB");
+const iProtocol_1 = require("../iProtocol");
+const PlatRedis_1 = require("../redis_clients/PlatRedis");
+const Define_1 = require("../config/Define");
+const sequelize = require("sequelize");
+/**
+ * 判断是否有此员工信息
+ * @param identity
+ * @param pwd
+ */
+function existEmployee(identity, pwd) {
+    return __awaiter(this, void 0, void 0, function* () {
+        var employeeDao = DB_1.platDB.mysql_client.getTable(MySqlDefine_1.TABLE_NAME.sys_admins);
+        var data = yield employeeDao.findOne({
+            where: {
+                identity: identity,
+                pwd: pwd
+            }
+        });
+        return data;
+    });
+}
+/**
+ * 验证session
+ * @param ctx
+ */
+function validate_session(ctx) {
+    return __awaiter(this, void 0, void 0, function* () {
+        var body = ctx.request.body;
+        if (ctx.headers["sessionkey"]) {
+            var sessionKey = ctx.headers["sessionkey"] + iProtocol_1.Constant.REDIS_CONFIG_SESSION;
+            var existId = yield PlatRedis_1.platRedis.redis_client.getStringSync(sessionKey);
+            if (existId)
+                return true;
+        }
+        return false;
+    });
+}
+/**
+ *
+ * @param adminId
+ */
+function isSuperAdmin(adminId) {
+    return __awaiter(this, void 0, void 0, function* () {
+        var admin = yield DB_1.platDB.sysAdminDAO.findOne({ where: {
+                identity: adminId
+            } });
+        if (admin && admin.promise == Define_1.ADMINS_TYPE.admin) {
+            return true;
+        }
+        return false;
+    });
+}
+/**
+ * 获取登陆得用户信息
+ * @param ctx
+ */
+function getLoginAdmin(ctx) {
+    return __awaiter(this, void 0, void 0, function* () {
+        if (ctx.headers["sessionkey"]) {
+            var sessionKey = ctx.headers["sessionkey"];
+            var adminInfo = yield DB_1.platDB.sysAdminDAO.findOne({ where: { identity: sessionKey } });
+            if (adminInfo) {
+                return adminInfo;
+            }
+        }
+        return null;
+    });
+}
+/**包含还有戏的所有用户 */
+function selectAdminByGame(gameId) {
+    return __awaiter(this, void 0, void 0, function* () {
+        var sqlCmd = `select * from sys_admins a where a.material like CONCAT('%','${gameId}','%')`;
+        var res = yield DB_1.platDB.dbClient.query(sqlCmd, { type: sequelize.QueryTypes.SELECT });
+        return res;
+    });
+}
+exports.platConfigService = {
+    validate_res: validate_session,
+    existEmployee: existEmployee,
+    isSuperAdmin: isSuperAdmin,
+    getLoginAdmin: getLoginAdmin,
+    selectAdminByGame: selectAdminByGame,
+};
+//# sourceMappingURL=PlatConfigServices.js.map

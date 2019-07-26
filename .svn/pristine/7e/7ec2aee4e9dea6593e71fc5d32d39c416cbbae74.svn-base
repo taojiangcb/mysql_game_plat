@@ -1,0 +1,26 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const MySqlDefine_1 = require("./mysqlDao/MySqlDefine");
+class DB {
+    constructor() { }
+    get sysPlatServerConfigDAO() {
+        if (this.mysql_client) {
+            return this.mysql_client.getTable(MySqlDefine_1.TABLE_NAME.sys_plat_config);
+        }
+        return null;
+    }
+    get sysPlatGameDAO() {
+        if (this.mysql_client) {
+            return this.mysql_client.getTable(MySqlDefine_1.TABLE_NAME.sys_plat_game);
+        }
+        return null;
+    }
+    get sysPromotion() {
+        if (this.mysql_client) {
+            return this.mysql_client.getTable(MySqlDefine_1.TABLE_NAME.sys_promotion);
+        }
+        return null;
+    }
+}
+exports.db = new DB();
+//# sourceMappingURL=DB.js.map

@@ -1,0 +1,115 @@
+import Koa = require("koa");
+import Router = require("koa-router");
+import fs = require("fs");
+import { IConfig, Define } from "./src/config/Define";
+import { Log } from "./src/log/Log";
+import http = require("http");
+import path = require("path");
+import { mySqlMgr } from "./src/database/mysqlDao/MySqlDBMgr";
+import { game_plat_define } from "./src/mysql_game_plat/MySqlDefine";
+import { platDB } from "./src/mysql_game_plat/DB";
+
+import redis = require("redis");
+import { platRedis } from "./src/redis_clients/PlatRedis";
+import { RedisHelp } from "./src/database/redisBase/RedisHelp";
+
+import session = require("koa-session");
+import { login_validate } from "./src/middlewares/login_validate";
+
+import bodyparser = require("koa-bodyparser");
+import koaCors = require("koa-cors");
+
+let app = new Koa();
+let router = new Router();
+let svrPath: string = "/src/servers";
+
+Define.rootPath = __dirname;
+
+function initServers(): void {
+    var server_files: string[];
+    var files = fs.readdirSync(`${__dirname}${svrPath}`);
+    server_files = files.filter((f) => {
+        return f.endsWith(".js");
+    }, this);
+
+    server_files.forEach(f => {
+        let mapping = require(`${__dirname}${svrPath}/${f}`);
+        for (var url in mapping) {
+            if (url.startsWith("GET")) {
+                let funs: string[] = url.split(/\s+/i);
+                router.get(funs[1], mapping[url]);
+                console.log(funs);
+            } else if (url.startsWith("POST")) {
+                let funs: string[] = url.split(/\s+/i);
+                router.post(funs[1], mapping[url]);
+                console.log(funs);
+            } else {
+                console.log("未知服务:" + url);
+            }
+        }
+    });
+}
+
+/**
+ * 当node 进程崩溃的时候处理
+ */
+process.addListener("uncaughtException", (err: Error) => {
+    if (err.message) {
+        console.log(err.message);
+    }
+    if (err.stack) {
+        console.log(err.stack);
+    }
+})
+
+/**
+ * 当node 进程退出时候处理
+ */
+process.addListener("exit", (code: number) => {
+    console.log("exit code" + code);
+});
+
+/**
+ * hello world
+ */
+router.get("/*", async (ctx) => {
+    ctx.body = "hello world";
+});
+
+var config_path: string = `config_${process.env.NODE_ENV}.json`;
+export var config: IConfig = JSON.parse(fs.readFileSync(__dirname + '/' + config_path).toString());
+var define_pro = Define;
+var overrideDefine = Object.assign(define_pro, config.setting);
+for (const key in overrideDefine) {
+    if (overrideDefine.hasOwnProperty(key)) {
+        const element = overrideDefine[key];
+        Define[key] = element;
+    }
+}
+console.log(Define);
+
+/** 初始化数据库 */
+async function appStart() {
+    platDB.mysql_client = await mySqlMgr.createMySql(game_plat_define.opts());
+    var module_url:string = path.join(__dirname,"src/mysql_game_plat/tables");
+    await platDB.mysql_client.loadModel(module_url);
+
+    var redisOpt:redis.ClientOpts = {
+        host:config.redis.ip,
+        port:config.redis.port,
+        auth_pass:config.redis.flag.auth_pass,
+        db:config.redis.select
+    }
+
+    var redisHelp:RedisHelp = new RedisHelp();          
+    await redisHelp.init(redisOpt);
+    platRedis.redis_client = redisHelp;
+    initServers();
+    app.use(koaCors({credentials:true}))
+    app.use(bodyparser({enableTypes:["json","from","xml"]}))
+    app.use(login_validate);
+    app.use(router.routes());
+    app.listen(Define.port);
+    Log.infoLog("server runing on port 3005");
+}
+appStart();

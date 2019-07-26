@@ -1,0 +1,40 @@
+import Koa = require("koa");
+import { Log } from "../log/Log";
+
+import http = require("http");
+
+import socketIo = require("socket.io");
+
+
+export module ws {
+    export class WebSocketServer {
+        constructor() {}
+        private ioServer:socketIo.Server;
+
+        private httpServer:http.Server;
+
+        listenerToServer(koa:Koa) {
+            //this.htmlValidate(server);
+            this.httpServer= http.createServer();
+            this.httpServer.listen(8080);
+
+            this.ioServer = socketIo(this.httpServer);
+            this.ioServer.on("connection",this.onConnection);
+            Log.log("websocket start");
+        }
+
+        htmlValidate(app:Koa):void {
+            console.log(app.middleware);
+        }
+
+        onConnection(socket:socketIo.Socket):void {
+            socket.emit("news",{hello:"world"});
+            socket.on('my other event',(data)=>{
+                console.log("data");
+            });
+            socket.on("disconnect",()=>{
+                console.log(`socket ${socket.id} disconnect`);
+            })
+        }
+    }
+}

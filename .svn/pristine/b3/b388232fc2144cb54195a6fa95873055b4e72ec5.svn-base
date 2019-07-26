@@ -1,0 +1,64 @@
+"use strict";
+/**日志文件处理 */
+Object.defineProperty(exports, "__esModule", { value: true });
+const log4js = require("log4js");
+const Define_1 = require("../config/Define");
+const path = require("path");
+//配置 Console
+var ca = {
+    type: "console"
+};
+//配置 logFIle
+var logFileAppender = {
+    type: "file",
+    filename: path.resolve(Define_1.Define.rootPath, "./logOut.log"),
+};
+//配置info 追逐
+var infoFileAppender = {
+    type: "dateFile",
+    filename: path.resolve(Define_1.Define.rootPath, "./logs/info"),
+    pattern: "-yyyy-MM-dd-hh.log",
+    alwaysIncludePattern: true,
+    layout: {
+        type: "messagePassThrough"
+    },
+    keepFileExt: false,
+    encoding: "utf-8"
+};
+var errorFileAppender = {
+    type: "stderr"
+};
+let logCfg = {
+    appenders: {
+        out: ca,
+        file: logFileAppender,
+        info: infoFileAppender,
+        error: errorFileAppender,
+    },
+    categories: {
+        default: { appenders: ['out', 'info', 'error'], level: 'info' },
+    }
+};
+log4js.configure(logCfg);
+let outLogger = log4js.getLogger("out");
+let fileLogger = log4js.getLogger("file");
+let infoLogger = log4js.getLogger("info");
+let errorLogger = log4js.getLogger("error");
+function log(msg, ...args) {
+    outLogger.debug(msg, args);
+    if (Define_1.Define.writeLogFile) {
+        fileLogger.debug(msg, args);
+    }
+}
+function infoLog(msg, ...args) {
+    infoLogger.info(msg, args);
+}
+function errorLog(msg, ...args) {
+    errorLogger.error(msg, args);
+}
+exports.Log = {
+    log: log,
+    infoLog: infoLog,
+    errorLog: errorLog,
+};
+//# sourceMappingURL=Log.js.map

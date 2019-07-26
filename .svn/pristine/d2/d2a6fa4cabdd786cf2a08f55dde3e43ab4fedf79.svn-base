@@ -1,0 +1,42 @@
+
+import { Context } from "koa";
+import { TABLE_NAME } from "../mysql_game_plat/MySqlDefine";
+import { platDB } from "../mysql_game_plat/DB";
+import { Constant } from "../iProtocol";
+import { sys_admin_table, sys_admin_attr } from "../mysql_game_plat/tables/sys_admins";
+import { platRedis } from "../redis_clients/PlatRedis";
+
+/**
+ * 判断是否有此员工信息
+ * @param identity 
+ * @param pwd 
+ */
+async function existEmployee(identity:string,pwd:string) {
+    var employeeDao = platDB.mysql_client.getTable<sys_admin_table,sys_admin_attr>(TABLE_NAME.sys_admins);
+    var data = await employeeDao.findOne({
+        where:{
+            identity:identity,
+            pwd:pwd
+        }
+    })
+    return data;
+}
+
+/**
+ * 验证session
+ * @param ctx 
+ */
+async function validate_session(ctx: Context) {
+    var body = ctx.request.body;
+    if(ctx.headers["sessionkey"]) {
+        var sessionKey = ctx.headers["sessionkey"] + Constant.REDIS_CONFIG_SESSION;
+        var existId:string = await platRedis.redis_client.getStringSync(sessionKey);
+        if(existId) return true;
+    }
+    return false;
+}
+
+export var platConfigService = {
+    validate_res:validate_session,
+    existEmployee:existEmployee
+}

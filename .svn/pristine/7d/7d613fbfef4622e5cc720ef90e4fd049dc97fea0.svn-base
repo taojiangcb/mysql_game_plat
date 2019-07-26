@@ -1,0 +1,20 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const sequelize = require("sequelize");
+const MySqlClient_1 = require("../MySqlClient");
+const MySqlDefine_1 = require("../../../mysql_game_plat/MySqlDefine");
+exports.tableName = MySqlDefine_1.TABLE_NAME.sys_user;
+exports.column = {
+    zx_id: { type: sequelize.STRING(64), primaryKey: true, allowNull: false },
+    money: { type: sequelize.DECIMAL(10), defaultValue: 0 },
+    user_name: { type: sequelize.STRING(50) },
+    pwd: { type: sequelize.STRING(50) },
+    name: { type: sequelize.STRING(100) },
+    avatar: { type: sequelize.STRING(300) },
+    loginToken: { type: sequelize.STRING(300) },
+    createTime: { type: sequelize.DATE, defaultValue: new Date() },
+    updateTime: { type: sequelize.DATE, defaultValue: new Date() }
+};
+exports.opts = MySqlClient_1.defColumnOpts;
+exports.sync_opt = MySqlClient_1.defSyncOpts;
+//# sourceMappingURL=sys_user.js.map

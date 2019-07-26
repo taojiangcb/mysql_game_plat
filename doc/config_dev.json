@@ -1,0 +1,48 @@
+{
+    "my_sql_plat_oa": {
+        "connectionLimit": 10,
+        "host": "47.100.202.222",
+        "port": 3306,
+        "user": "root",
+        "password": "root",
+        "database": "plat_oa",
+        "tables": {
+            "sys_user": 1,
+            "sys_user_plat": 1,
+            "sys_user_game": 1
+        }
+    },
+    "my_sql_plat_users": {
+        "connectionLimit": 10,
+        "host": "47.100.202.222",
+        "port": 3306,
+        "user": "root",
+        "password": "root",
+        "database": "plat_oa_user",
+        "tables": {
+            "sys_user": 1
+        }
+    },
+    "my_sql_plat_logs": {
+        "connectionLimit": 10,
+        "host": "47.100.202.222",
+        "port": 3306,
+        "user": "root",
+        "password": "root",
+        "database": "plat_oa_logs",
+        "tables": {
+            "sys_user": 1
+        }
+    },
+    "redis": {
+        "ip": "47.100.202.222",
+        "port": 6379,
+        "select": 2,
+        "flag": {
+            "auth_pass": "taotao520"
+        }
+    },
+    "setting": {
+        "port": 3005
+    }
+}

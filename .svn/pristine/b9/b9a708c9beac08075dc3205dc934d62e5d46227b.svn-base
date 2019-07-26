@@ -1,0 +1,49 @@
+export class BaseResp {
+    success: boolean;
+    code: number;
+    msg: string;
+    data: any;
+    constructor(success: boolean, code: number, msg: string, data?: any) {
+        this.success = success;
+        this.code = code;
+        this.msg = msg;
+        this.data = data;
+    }
+}
+
+export interface IPlatConfig {
+    platId: number,
+    gameId: number,
+    config: any,
+    serverConfig: any,
+    power: number,              //充值比例，10表示人民币：钻石   1：10
+    openPresent: number,        //每日可赠送的数量
+    mode: number,               //0：测试，1：审核中，2：已发布
+    game_name: string,           //游戏名
+}
+
+export enum RES_STATE {
+    succeed_200 = 200,      //成功
+    error_404 = 404,        //（未找到） 服务器找不到请求的网页。 
+    error_500 = 500,        //（服务器内部错误）  服务器遇到错误，无法完成请求。 
+    error_503 = 503,        //服务器目前无法使用（由于超载或停机维护）。 通常，这只是暂时状态。 
+}
+
+export enum IosRechargeState {
+    COMMIT = 0,
+    SUCCESS = 1,
+    FAIL = 2,
+}
+
+export class Constant {
+    static REDIS_TOKEN:string = 'PLATGAME_USER_TOKEN';
+    static REDIS_WEIXIN:string = 'PLATGAME_USER_WEIXIN';
+    static REDIS_SERVICE:string = 'PLATGAME_SERVICE';
+    static REDIS_FBINSTANT:string = "REDIS_FBINSTANT";
+    static REDIS_CONFIG_SESSION:string = "REDIS_CONFIG_SESSION";
+    static PLATGAME_SERVICE_RESULT:string = 'PLATGAME_SERVICE_RESULT';
+    static PLATGAME_USER_TEMP_CHANNEL:string = 'PLATGAME_USER_TEMP_CHANNEL_';
+    static GAME_BOX_GAME_LIST:string = "GAME_BOX_GAME_LIST";
+    static PLATGAME_USER_LOGIN_DATA:string = "PLATGAME_USER_LOGIN_DATA";
+    static LOCAL_STORAGE_KEY:string = "LOCAL_STORAGE_KEY";
+}

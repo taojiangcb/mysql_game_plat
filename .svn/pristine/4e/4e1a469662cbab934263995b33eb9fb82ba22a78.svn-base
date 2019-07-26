@@ -1,0 +1,22 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const sequelize = require("sequelize");
+const MySqlClient_1 = require("../MySqlClient");
+const MySqlDefine_1 = require("../../../mysql_game_plat/MySqlDefine");
+exports.tableName = MySqlDefine_1.TABLE_NAME.sys_admins;
+exports.column = {
+    id: { type: sequelize.INTEGER(10), primaryKey: true },
+    identity: { type: sequelize.STRING(255), allowNull: true },
+    pwd: { type: sequelize.STRING(255), allowNull: true },
+    material: { type: sequelize.STRING(255), allowNull: true },
+    createTime: { type: sequelize.DATE, get() {
+            return new Date(this.getDataValue("createTime")).getTime();
+        } },
+    updateTime: { type: sequelize.DATE, get() {
+            return new Date(this.getDataValue("updateTime")).getTime();
+        } },
+    promise: { type: sequelize.INTEGER(11) },
+};
+exports.opts = MySqlClient_1.defColumnOpts;
+exports.sync_opt = MySqlClient_1.defSyncOpts;
+//# sourceMappingURL=sys_admins.js.map

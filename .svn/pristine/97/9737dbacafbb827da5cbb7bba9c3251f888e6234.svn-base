@@ -1,0 +1,38 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+class BaseResp {
+    constructor(success, code, msg, data) {
+        this.success = success;
+        this.code = code;
+        this.msg = msg;
+        this.data = data;
+    }
+}
+exports.BaseResp = BaseResp;
+var RES_STATE;
+(function (RES_STATE) {
+    RES_STATE[RES_STATE["succeed_200"] = 200] = "succeed_200";
+    RES_STATE[RES_STATE["error_404"] = 404] = "error_404";
+    RES_STATE[RES_STATE["error_500"] = 500] = "error_500";
+    RES_STATE[RES_STATE["error_503"] = 503] = "error_503";
+})(RES_STATE = exports.RES_STATE || (exports.RES_STATE = {}));
+var IosRechargeState;
+(function (IosRechargeState) {
+    IosRechargeState[IosRechargeState["COMMIT"] = 0] = "COMMIT";
+    IosRechargeState[IosRechargeState["SUCCESS"] = 1] = "SUCCESS";
+    IosRechargeState[IosRechargeState["FAIL"] = 2] = "FAIL";
+})(IosRechargeState = exports.IosRechargeState || (exports.IosRechargeState = {}));
+class Constant {
+}
+Constant.REDIS_TOKEN = 'PLATGAME_USER_TOKEN';
+Constant.REDIS_WEIXIN = 'PLATGAME_USER_WEIXIN';
+Constant.REDIS_SERVICE = 'PLATGAME_SERVICE';
+Constant.REDIS_FBINSTANT = "REDIS_FBINSTANT";
+Constant.REDIS_CONFIG_SESSION = "REDIS_CONFIG_SESSION";
+Constant.PLATGAME_SERVICE_RESULT = 'PLATGAME_SERVICE_RESULT';
+Constant.PLATGAME_USER_TEMP_CHANNEL = 'PLATGAME_USER_TEMP_CHANNEL_';
+Constant.GAME_BOX_GAME_LIST = "GAME_BOX_GAME_LIST";
+Constant.PLATGAME_USER_LOGIN_DATA = "PLATGAME_USER_LOGIN_DATA";
+Constant.LOCAL_STORAGE_KEY = "LOCAL_STORAGE_KEY";
+exports.Constant = Constant;
+//# sourceMappingURL=iProtocol.js.map

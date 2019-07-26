@@ -1,0 +1,59 @@
+import { MySqlClient } from "../database/mysqlDao/MySqlClient";
+
+import { TABLE_NAME } from "./MySqlDefine";
+import { ISysPlatConfigDAO, ISysPlatConfigDAOAtt } from "./tables/sys_plat_config";
+import { ISysPlatGameDAO, ISysPlatGameDAOATT } from "./tables/sys_plat_game";
+import { ISysPromotion, ISysPromotionAttr } from "./tables/sys_promotion";
+import { iSys_ios_app_attrs, iSys_ios_app_table } from "./tables/sys_ios_app";
+
+class DB {
+    constructor(){}
+
+    mysql_client:MySqlClient;
+
+    private iosApp:iSys_ios_app_attrs[] = null;
+
+    get sysPlatServerConfigDAO(){
+        if(this.mysql_client){
+            return this.mysql_client.getTable<ISysPlatConfigDAO,ISysPlatConfigDAOAtt>(TABLE_NAME.sys_plat_config);
+        }
+        return null;
+    }
+
+    get sysPlatGameDAO() {
+        if(this.mysql_client) {
+            return this.mysql_client.getTable<ISysPlatGameDAO,ISysPlatGameDAOATT>(TABLE_NAME.sys_plat_game);
+        }
+        return null;
+    }
+
+    get sysPromotion() {
+        if(this.mysql_client) {
+            return this.mysql_client.getTable<ISysPromotion,ISysPromotionAttr>(TABLE_NAME.sys_promotion);
+        }
+        return null;
+    }
+
+    get sysIosAppDao() {
+        if(this.mysql_client) {
+            return this.mysql_client.getTable<iSys_ios_app_table,iSys_ios_app_attrs>(TABLE_NAME.sys_ios_app);
+        }
+        return null;
+    }
+
+    async getIosAppCache():Promise<iSys_ios_app_attrs[]> {
+        if(this.iosApp) return this.iosApp;
+        if(this.sysIosAppDao) {
+            let iosAppDatas = await this.sysIosAppDao.findAll();
+            if(iosAppDatas.length > 0) {
+                this.iosApp = [];
+                iosAppDatas.forEach(element => {
+                    this.iosApp.push(element);
+                });
+            }
+        }
+        return this.iosApp;
+    }
+}
+
+export var platDB = new DB();

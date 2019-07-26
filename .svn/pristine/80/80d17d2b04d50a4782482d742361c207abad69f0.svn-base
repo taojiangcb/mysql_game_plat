@@ -1,0 +1,33 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const Log_1 = require("../log/Log");
+const http = require("http");
+const socketIo = require("socket.io");
+var ws;
+(function (ws) {
+    class WebSocketServer {
+        constructor() { }
+        listenerToServer(koa) {
+            //this.htmlValidate(server);
+            this.httpServer = http.createServer();
+            this.httpServer.listen(8080);
+            this.ioServer = socketIo(this.httpServer);
+            this.ioServer.on("connection", this.onConnection);
+            Log_1.Log.log("websocket start");
+        }
+        htmlValidate(app) {
+            console.log(app.middleware);
+        }
+        onConnection(socket) {
+            socket.emit("news", { hello: "world" });
+            socket.on('my other event', (data) => {
+                console.log("data");
+            });
+            socket.on("disconnect", () => {
+                console.log(`socket ${socket.id} disconnect`);
+            });
+        }
+    }
+    ws.WebSocketServer = WebSocketServer;
+})(ws = exports.ws || (exports.ws = {}));
+//# sourceMappingURL=WebSocketServer.js.map

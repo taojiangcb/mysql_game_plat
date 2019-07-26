@@ -1,0 +1,59 @@
+[2018-07-26T21:47:02.506] [DEBUG] fileLog - server runing on port 3000 []
+[2018-07-26T21:48:35.161] [DEBUG] fileLog - server runing on port 3000 []
+[2018-07-26T21:51:34.321] [DEBUG] fileLog - server runing on port 3000 []
+[2018-07-26T21:55:32.229] [DEBUG] fileLog - server runing on port 3000 []
+[2018-07-26T22:15:13.334] [INFO] fileLog - server runing on port 3000 []
+[2018-07-26T22:15:13.717] [INFO] fileLog - 数据库准备成功 []
+[2018-07-26T22:18:44.013] [INFO] fileLog - server runing on port 3000 []
+[2018-07-26T22:18:44.306] [INFO] fileLog - 数据库准备成功 []
+[2018-07-26T22:21:44.620] [INFO] fileLog - server runing on port 3000 []
+[2018-07-26T22:21:44.886] [INFO] fileLog - 数据库准备成功 []
+[2018-07-26T22:22:09.678] [INFO] fileLog - server runing on port 3000 []
+[2018-07-26T22:22:09.973] [INFO] fileLog - 数据库准备成功 []
+[2018-07-26T22:23:49.902] [INFO] fileLog - server runing on port 3000 []
+[2018-07-26T22:23:50.705] [INFO] fileLog - 数据库准备成功 []
+[2018-07-26T22:25:33.924] [INFO] fileLog - server runing on port 3000 []
+[2018-07-26T22:25:37.263] [INFO] fileLog - 数据库准备成功 []
+[2018-07-26T22:31:07.329] [INFO] fileLog - server runing on port 3000 []
+[2018-07-26T22:31:26.528] [INFO] fileLog - 数据库准备成功 []
+[2018-08-02T22:10:35.291] [INFO] fileLog - server runing on port 3000 []
+[2018-08-02T22:10:35.298] [INFO] fileLog - undefined []
+[2018-08-02T22:10:35.300] [INFO] fileLog - { Error: Redis connection in broken state: connection timeout exceeded.
+    at RedisClient.connection_gone (D:\work\koa_sample\node_modules\redis\index.js:649:19)
+    at Socket.<anonymous> (D:\work\koa_sample\node_modules\redis\index.js:259:18)
+    at Object.onceWrapper (events.js:273:13)
+    at Socket.emit (events.js:182:13)
+    at Socket._onTimeout (net.js:444:8)
+    at ontimeout (timers.js:427:11)
+    at tryOnTimeout (timers.js:289:5)
+    at listOnTimeout (timers.js:252:5)
+    at Timer.processTimers (timers.js:212:10) code: 'CONNECTION_BROKEN' } []
+[2018-08-02T22:10:36.220] [INFO] fileLog - 数据库准备成功 []
+[2018-08-02T22:11:34.569] [INFO] fileLog - server runing on port 3000 []
+[2018-08-02T22:11:34.574] [INFO] fileLog - undefined []
+[2018-08-02T22:11:34.577] [INFO] fileLog - { Error: Redis connection in broken state: connection timeout exceeded.
+    at RedisClient.connection_gone (D:\work\koa_sample\node_modules\redis\index.js:649:19)
+    at Socket.<anonymous> (D:\work\koa_sample\node_modules\redis\index.js:259:18)
+    at Object.onceWrapper (events.js:273:13)
+    at Socket.emit (events.js:182:13)
+    at Socket._onTimeout (net.js:444:8)
+    at ontimeout (timers.js:427:11)
+    at tryOnTimeout (timers.js:289:5)
+    at listOnTimeout (timers.js:252:5)
+    at Timer.processTimers (timers.js:212:10) code: 'CONNECTION_BROKEN' } []
+[2018-08-02T22:11:34.829] [INFO] fileLog - 数据库准备成功 []
+[2018-08-04T16:00:40.105] [DEBUG] fileLog - =======redis value is [object Promise] []
+[2018-08-04T16:04:15.907] [DEBUG] fileLog - =======redis value is 12306==== []
+[2018-08-04T17:27:19.897] [DEBUG] fileLog - =======redis value is 12306==== []
+[2019-02-24T15:11:44.280] [DEBUG] fileLog - websocket start []
+[2019-02-24T15:12:50.130] [DEBUG] fileLog - websocket start []
+[2019-02-24T16:21:52.865] [DEBUG] fileLog - websocket start []
+[2019-02-24T16:27:50.926] [DEBUG] fileLog - websocket start []
+[2019-02-24T16:54:47.470] [DEBUG] fileLog - websocket start []
+[2019-02-24T16:59:26.978] [DEBUG] fileLog - websocket start []
+[2019-02-24T17:18:54.910] [DEBUG] fileLog - websocket start []
+[2019-02-24T17:23:08.139] [DEBUG] fileLog - websocket start []
+[2019-02-24T17:27:25.492] [DEBUG] fileLog - websocket start []
+[2019-02-24T17:36:44.565] [DEBUG] fileLog - websocket start []
+[2019-02-24T17:44:08.985] [DEBUG] fileLog - websocket start []
+[2019-02-24T17:48:11.980] [DEBUG] fileLog - websocket start []

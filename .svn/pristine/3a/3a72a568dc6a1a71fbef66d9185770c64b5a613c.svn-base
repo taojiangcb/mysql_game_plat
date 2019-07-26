@@ -1,0 +1,7 @@
+import { RedisHelp } from "../database/redisBase/RedisHelp";
+
+class PlatRedis {
+    redis_client:RedisHelp = null;
+}
+export var platRedis = new PlatRedis();
+//export var platRedisInst = platRedis.redis_client;

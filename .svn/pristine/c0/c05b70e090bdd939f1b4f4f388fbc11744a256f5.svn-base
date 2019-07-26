@@ -1,0 +1,301 @@
+import { Context } from "koa";
+import sequelize = require("sequelize");
+import { Transaction } from "sequelize";
+import { IPlatConfig, BaseResp, Constant } from "../iProtocol";
+import { platConfigService } from "../services/PlatConfigServices";
+import { ERROR_CODE, ERROR_MSG } from "../ErrorCode";
+import { platDB } from "../mysql_game_plat/DB";
+import { ISysPlatConfigDAOAtt } from "../mysql_game_plat/tables/sys_plat_config";
+import { ISysPromotion } from "../mysql_game_plat/tables/sys_promotion";
+import { sys_admin_attr } from "../mysql_game_plat/tables/sys_admins";
+import { platRedis } from "../redis_clients/PlatRedis";
+
+
+async function addWxConfig(ctx: Context, next) {
+    var body = ctx.request.body;
+    var attr: ISysPlatConfigDAOAtt = {
+        plat_id: body.platId,
+        game_id: body.gameId,
+        game_name: body.gameName,
+        power: body.power,
+        config: body.config,
+        server_config: body.server_config,
+        openPresent: body.openPresent,
+        status: 1,
+    }
+
+    if (await platConfigService.validate_res(ctx)) {
+        var res: [IPlatConfig, boolean] = await addConfig(attr);
+        if (res) {
+            ctx.response.body = new BaseResp(true, 0, "", res);
+        }
+        else {
+            ctx.response.body = new BaseResp(false, ERROR_CODE.ERROR_PLAT_6101, "参数错误")
+        }
+    }
+    else {
+        ctx.response.body = new BaseResp(false, ERROR_CODE.ERROR_10, ERROR_MSG.ERROR_10);
+    }
+}
+
+async function getConfigTables(ctx: Context, next) {
+    var body = ctx.request.body;
+    let res: ISysPlatConfigDAOAtt[] = await platDB.sysPlatServerConfigDAO.findAll();
+    if (res) {
+        ctx.response.body = new BaseResp(true, 0, "", res);
+    }
+    else {
+        ctx.response.body = new BaseResp(true, ERROR_CODE.PLAT_INFO_6001, "获取平台信息失败");
+    }
+}
+
+async function getConfig(ctx: Context, next) {
+    var body = ctx.request.body;
+    var game_id: number = body.game_id;
+    var plat_id: number = body.plat_id;
+    var ipconfig: ISysPlatConfigDAOAtt = await platDB.sysPlatServerConfigDAO.find({
+        where: {
+            game_id: game_id,
+            plat_id: plat_id
+        }
+    });
+    if (ipconfig) {
+        ctx.response.body = new BaseResp(true, 0, "", ipconfig);
+    }
+    else {
+        ctx.response.body = new BaseResp(true, ERROR_CODE.PLAT_INFO_6001, "获取平台信息失败");
+    }
+}
+
+async function addConfig(conData: ISysPlatConfigDAOAtt) {
+    var ipconfig: any = await platDB.sysPlatServerConfigDAO.find({
+        where: {
+            game_id: conData.game_id,
+            plat_id: conData.plat_id
+        }
+    })
+
+    if (!ipconfig) {
+        var a: [any, boolean] = await platDB.sysPlatServerConfigDAO.findOrCreate(
+            {
+                where: {
+                    game_id: conData.game_id,
+                    plat_id: conData.plat_id
+                },
+                defaults: {
+                    plat_id: conData.plat_id,
+                    game_id: conData.game_id,
+                    game_name: conData.game_name,
+                    power: conData.power,
+                    openPresent: conData.openPresent,
+                    status: 1,
+                    config: conData.config,
+                    server_config: conData.server_config,
+                }
+            }
+        )
+        ipconfig = a["0"];
+    }
+    else {
+        ipconfig.plat_id = conData.plat_id;
+        ipconfig.game_id = conData.game_id;
+        ipconfig.game_name = conData.game_name;
+        ipconfig.power = conData.power;
+        ipconfig.openPresent = conData.openPresent;
+        ipconfig.status = 1;
+        ipconfig.config = conData.config;
+        ipconfig.server_config = conData.server_config;
+        ipconfig.modify_time = "NOW()";
+        ipconfig.save();
+    }
+    return ipconfig;
+}
+
+async function addGame(ctx: Context, next) {
+    var body = ctx.request.body;
+    if (await platConfigService.validate_res(ctx)) {
+        var gameName: string = body.gameName;
+        var gameId: string = body.addGameId;
+        if (gameName) {
+            var gameRres = await platDB.sysPlatGameDAO.find({
+                where: {game_name: gameName},
+            })
+            if (gameRres) {
+                ctx.response.body = new BaseResp(true, 0, "", gameRres);
+            }
+            else {
+                try {
+                    var createGame = await platDB.sysPlatGameDAO.create({
+                        game_name: gameName,
+                        game_id: Number(gameId)
+                    })
+                    if (createGame) {
+                        ctx.response.body = new BaseResp(true, 0, "", createGame);
+                    }
+                    else {
+                        ctx.response.body = new BaseResp(false, ERROR_CODE.ERROR_PLAT_6102, ERROR_MSG.ERROR_PLAT_6102);
+                    }
+                }
+                catch (e) {
+                    ctx.response.body = new BaseResp(false, ERROR_CODE.ERROR_PLAT_6102, JSON.stringify(e));
+                }
+            }
+        }
+    }
+    else {
+        ctx.response.body = new BaseResp(false, ERROR_CODE.ERROR_10, ERROR_MSG.ERROR_10);
+    }
+}
+
+async function deleteGame(ctx: Context, next) {
+    var body = ctx.request.body;
+    var game_id = body.gameId;
+    if (await platConfigService.validate_res(ctx)) {
+        await platDB.sysPlatGameDAO.destroy({
+            where: { game_id: game_id },
+        })
+        await platDB.sysPlatServerConfigDAO.destroy({
+            where: { game_id: game_id },
+        })
+        ctx.response.body = new BaseResp(true, 0, "");
+    }
+    else {
+        ctx.response.body = new BaseResp(false, ERROR_CODE.ERROR_10, ERROR_MSG.ERROR_10);
+    }
+}
+
+/**
+ * @param ctx 删除配置
+ * @param next 
+ */
+async function deleteConfig(ctx: Context, next) {
+    var body = ctx.request.body;
+    if (await platConfigService.validate_res(ctx)) {
+        var delCount = await platDB.sysPlatServerConfigDAO.destroy({
+            where: {id: body.id}
+        })
+        if (delCount > 0) {
+            ctx.response.body = new BaseResp(true, 0, "");
+        }
+        else {
+            ctx.response.body = new BaseResp(false, 0, "");
+        }
+    }
+    else {
+        ctx.response.body = new BaseResp(false, ERROR_CODE.ERROR_10, ERROR_MSG.ERROR_10);
+    }
+}
+
+async function getIosApps(ctx: Context, next) {
+    var appinfos =  await platDB.getIosAppCache();
+    ctx.response.body = new BaseResp(true, 0, "", appinfos);
+}
+
+async function getAllGames(ctx: Context, next) {
+    var allGames = await platDB.sysPlatGameDAO.findAll();
+    if (allGames) {
+        ctx.response.body = new BaseResp(true, 0, "", allGames);
+    }
+    else {
+        ctx.response.body = new BaseResp(false, ERROR_CODE.ERROR_PLAT_6103, ERROR_MSG.ERROR_PLAT_6103);
+    }
+}
+
+async function getAllPromotion(ctx: Context, next) {
+    if (await platConfigService.validate_res(ctx)) {
+        ctx.response.body = new BaseResp(false, ERROR_CODE.ERROR_10, ERROR_MSG.ERROR_10);
+    }
+    var allPromotion = await platDB.sysPromotion.findAll();
+    if (allPromotion) {
+        ctx.response.body = new BaseResp(true, 0, "", allPromotion);
+    }
+    else {
+        ctx.response.body = new BaseResp(false, ERROR_CODE.ERROR_PLAT_6103, ERROR_MSG.ERROR_PLAT_6103);
+    }
+}
+
+async function editPromotion(ctx: Context, next) {
+    if (await platConfigService.validate_res(ctx)) {
+        ctx.response.body = new BaseResp(false, ERROR_CODE.ERROR_10, ERROR_MSG.ERROR_10);
+    }
+    var body = ctx.request.body;
+    var { id, gameId, platId, name, rate = 0, appId, button, channels = "", games = "", showtype = 0, page = "" } = body;
+    if (!gameId || !platId || !button || !appId) {
+        ctx.response.body = new BaseResp(false, ERROR_CODE.ERROR_PLAT_6103, ERROR_MSG.ERROR_PLAT_6103);
+        return;
+    }
+    var promotion: ISysPromotion;
+    if (id) {
+        promotion = await platDB.sysPromotion.findOne({
+            where: {
+                id: id
+            }
+        });
+        promotion.game_id = gameId;
+        promotion.plat_id = platId;
+        promotion.name = name;
+        promotion.rate = rate;
+        promotion.appId = appId;
+        promotion.button = button;
+        promotion.channels = channels;
+        promotion.games = games;
+        promotion.showtype = showtype;
+        promotion.page = page;
+        await promotion.save();
+    }
+    else {
+        promotion = await platDB.sysPromotion.create({
+            game_id: gameId,
+            plat_id: platId,
+            name: name,
+            rate: rate,
+            appId: appId,
+            button: button,
+            channels: channels,
+            games: games,
+            showtype: showtype,
+            page: page
+        })
+    }
+    ctx.response.body = new BaseResp(true, 0, "", promotion);
+}
+
+async function login(ctx: Context, next) {
+    var body = ctx.request.body;
+    if (body) {
+        var identity: string = body.identity;
+        var pwd: string = body.pwd;
+        var employee: sys_admin_attr = await platConfigService.existEmployee(identity, pwd);
+        if (employee) {
+            var data: sys_admin_attr = {
+                id: employee.id || 0,
+                identity: employee.identity || "",
+                material: employee.material || "",
+            }
+
+            var session_key: string = employee.identity + Constant.REDIS_CONFIG_SESSION;
+            if (session_key) {
+                await platRedis.redis_client.setStringSync(session_key, "true");
+                await platRedis.redis_client.setExpire(session_key, 86400);
+            }
+            ctx.response.body = new BaseResp(true, 0, "", data);
+        }
+        else {
+            ctx.response.body = new BaseResp(false, ERROR_CODE.ERROR_1001, ERROR_MSG.ERROR_1001);
+        }
+    }
+}
+
+module.exports = {
+    "POST /Game/addWxConfig": addWxConfig,
+    "POST /Game/configTables": getConfigTables,
+    "POST /Game/getConfig": getConfig,
+    "POST /Game/addGame": addGame,
+    "POST /Game/allGames": getAllGames,
+    "POST /Game/deleteGame": deleteGame,
+    "POST /Game/deleteConfig": deleteConfig,
+    "POST /Game/getIosApps": getIosApps,
+    "POST /Game/getAllPromotion": getAllPromotion,
+    "POST /Game/editPromotion": editPromotion,
+    "POST /Game/login": login,
+}

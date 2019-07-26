@@ -1,0 +1,25 @@
+import { Instance } from "sequelize";
+import sequelize = require("sequelize");
+import { TABLE_NAME } from "../../mysql_define/MySqlDefine";
+import { defColumnOpts, defSyncOpts } from "../../database/mysqlDao/MySqlClient";
+
+export var tableName:string = TABLE_NAME.sys_plat_game;
+
+export interface ISysPlatGameDAOATT {
+    game_id?:number;
+    game_name?:string;
+    create_time?:number;
+    modify_time?:number;
+}
+
+export interface ISysPlatGameDAO extends Instance<ISysPlatGameDAOATT>,ISysPlatGameDAOATT {}
+
+export var column:sequelize.DefineAttributes = {
+    game_id:{type:sequelize.INTEGER,primaryKey:true,allowNull:false},
+    game_name:{type:sequelize.STRING(200)},
+    create_time:{type:sequelize.DATE,get(){ return new Date(this.getDataValue("create_time")).getTime();}},
+    modify_time:{type:sequelize.DATE,get(){ return new Date(this.getDataValue("modify_time")).getTime();}},
+}
+
+export var opts:sequelize.DefineOptions<ISysPlatGameDAO> = defColumnOpts;
+export var sync_opt:sequelize.SyncOptions = defSyncOpts;

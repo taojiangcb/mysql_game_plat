@@ -1,0 +1,25 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const sequelize = require("sequelize");
+const DAOBase_1 = require("../DAOBase");
+class sys_recharge_log {
+    constructor() {
+        this.tableName = DAOBase_1.TablesNames.sys_recharge_log;
+        this.columns = {
+            id: { type: sequelize.INTEGER(11), primaryKey: true, allowNull: false, autoIncrement: true },
+            zx_id: { type: sequelize.STRING(64), allowNull: false },
+            order_id: { type: sequelize.STRING(200) },
+            plat_id: { type: sequelize.INTEGER(11) },
+            game_id: { type: sequelize.INTEGER(11) },
+            rmb: { type: sequelize.DECIMAL(10, 2) },
+            money: { type: sequelize.DECIMAL(10, 2) },
+            node: { type: sequelize.STRING(200) },
+            createTime: { type: sequelize.DATE, defaultValue: new Date() },
+            updateTime: { type: sequelize.DATE, defaultValue: new Date() }
+        };
+        this.opt = DAOBase_1.normal_opt;
+        this.syncOpt = DAOBase_1.normal_sync_opt;
+    }
+}
+module.exports.model = new sys_recharge_log();
+//# sourceMappingURL=sys_recharge_log_dao.js.map

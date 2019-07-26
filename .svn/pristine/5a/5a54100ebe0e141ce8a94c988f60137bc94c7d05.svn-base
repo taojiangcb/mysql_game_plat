@@ -1,0 +1,161 @@
+"use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const sequelize = require("sequelize");
+const events_1 = require("events");
+const app_1 = require("../../app");
+class SequelizeConfig extends events_1.EventEmitter {
+    constructor() {
+        super(...arguments);
+        /**
+         * 当前的数据模型缓存对象
+         */
+        this.dbTables = {};
+    }
+    /**
+     * @param connectionSuccess
+     * @param connectionFail
+     */
+    init(connectionSuccess, connectionFail) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let opt = {
+                host: app_1.config.my_sql.host,
+                port: app_1.config.my_sql.port,
+                dialect: "mysql",
+                logging: this.logHandler.bind(this)
+            };
+            this.sequelize = new sequelize(app_1.config.my_sql.database, app_1.config.my_sql.user, app_1.config.my_sql.pwd, opt);
+            this.sequelize.authenticate().then(() => {
+                console.log('Connection has been established successfully.');
+                this.initDataBase();
+                connectionSuccess && connectionSuccess();
+            })
+                .catch(err => {
+                console.error('Unable to connect to the database:', err);
+                connectionFail && connectionFail();
+            });
+        });
+    }
+    //定义数据模型
+    initDataBase() {
+        this.createOrSyncTable(sys_user);
+        this.createOrSyncTable(sys_user_game);
+        this.createOrSyncTable(sys_user_plat);
+        this.createOrSyncTable(sys_recharge_log);
+    }
+    createOrSyncTable(T) {
+        let table = this.sequelize.define(T.tableName, T.columns, T.opt);
+        table.sync(T.syncOpt).then((value) => {
+            console.debug(`sync:${T.tableName} force:${T.syncOpt.force}`);
+        });
+        this.dbTables[T.tableName] = table;
+    }
+    /**
+     * mysql log 日志输出
+     * @param sql
+     * @param time
+     */
+    logHandler(sql, time) {
+        console.debug(`sql:${sql} runTime:${time}`);
+        let eventParam = {
+            sql_text: sql.replace('Executed (default):', ''),
+            const_time: time
+        };
+        this.emit(SequelizeEvents.RECORD, eventParam);
+    }
+    get tables() {
+        return this.dbTables;
+    }
+}
+exports.SequelizeConfig = SequelizeConfig;
+/**
+ * 数据库操作事件
+ */
+class SequelizeEvents {
+}
+SequelizeEvents.RECORD = "record";
+exports.SequelizeEvents = SequelizeEvents;
+exports.TablesNames = {
+    sys_user: "sys_user",
+    sys_user_game: "sys_user_game",
+    sys_user_plat: "sys_user_plat",
+    sys_recharge_log: "sys_recharge_log"
+};
+var normal_sync_opt = {
+    force: false,
+};
+var normal_opt = {
+    timestamps: true,
+    createdAt: "createTime",
+    updatedAt: "updateTime",
+    deletedAt: "deleteTime"
+};
+class sys_user {
+}
+sys_user.tableName = exports.TablesNames.sys_user;
+sys_user.columns = {
+    zx_id: { type: sequelize.STRING(64), primaryKey: true, allowNull: false },
+    money: { type: sequelize.DECIMAL(10), defaultValue: 0 },
+    user_name: { type: sequelize.STRING(50) },
+    pwd: { type: sequelize.STRING(50) },
+    name: { type: sequelize.STRING(100) },
+    avatar: { type: sequelize.STRING(300) },
+    loginToken: { type: sequelize.STRING(300) },
+    createTime: { type: sequelize.DATE, defaultValue: new Date() },
+    updateTime: { type: sequelize.DATE, defaultValue: new Date() }
+};
+sys_user.opt = normal_opt;
+sys_user.syncOpt = normal_sync_opt;
+class sys_user_game {
+}
+sys_user_game.tableName = exports.TablesNames.sys_user_game;
+sys_user_game.columns = {
+    zx_id: { type: sequelize.STRING(64), primaryKey: true, allowNull: false },
+    plat_id: { type: sequelize.INTEGER(4) },
+    game_id: { type: sequelize.INTEGER(4) },
+    rmb: { type: sequelize.BIGINT, defaultValue: 0 },
+    sandbox_rmb: { type: sequelize.BIGINT, defaultValue: 0 },
+    money: { type: sequelize.BIGINT },
+    createTime: { type: sequelize.DATE, defaultValue: new Date() },
+    updateTime: { type: sequelize.DATE, defaultValue: new Date() }
+};
+sys_user_game.opt = normal_opt;
+sys_user_game.syncOpt = normal_sync_opt;
+class sys_user_plat {
+}
+sys_user_plat.tableName = exports.TablesNames.sys_user_plat;
+sys_user_plat.columns = {
+    zx_id: { type: sequelize.STRING(64), primaryKey: true, allowNull: false },
+    plat_id: { type: sequelize.INTEGER(4) },
+    userId: { type: sequelize.STRING },
+    unionId: { type: sequelize.STRING },
+    createTime: { type: sequelize.DATE, defaultValue: new Date() },
+    updateTime: { type: sequelize.DATE, defaultValue: new Date() }
+};
+sys_user_plat.opt = normal_opt;
+sys_user_plat.syncOpt = normal_sync_opt;
+class sys_recharge_log {
+}
+sys_recharge_log.tableName = exports.TablesNames.sys_recharge_log;
+sys_recharge_log.columns = {
+    id: { type: sequelize.INTEGER(11), primaryKey: true, allowNull: false, autoIncrement: true },
+    zx_id: { type: sequelize.STRING(64), allowNull: false },
+    order_id: { type: sequelize.STRING(200) },
+    plat_id: { type: sequelize.INTEGER(11) },
+    game_id: { type: sequelize.INTEGER(11) },
+    rmb: { type: sequelize.DECIMAL(10, 2) },
+    money: { type: sequelize.DECIMAL(10, 2) },
+    node: { type: sequelize.STRING(200) },
+    createTime: { type: sequelize.DATE, defaultValue: new Date() },
+    updateTime: { type: sequelize.DATE, defaultValue: new Date() }
+};
+sys_recharge_log.opt = normal_opt;
+sys_recharge_log.syncOpt = normal_sync_opt;
+//# sourceMappingURL=SequelizeConfig.js.map

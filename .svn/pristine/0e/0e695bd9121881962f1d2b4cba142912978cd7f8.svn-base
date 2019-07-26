@@ -1,0 +1,480 @@
+"use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const iProtocol_1 = require("../iProtocol");
+const PlatConfigServices_1 = require("../services/PlatConfigServices");
+const ErrorCode_1 = require("../ErrorCode");
+const DB_1 = require("../mysql_game_plat/DB");
+const PlatRedis_1 = require("../redis_clients/PlatRedis");
+const LogToDB_1 = require("../util/LogToDB");
+const Define_1 = require("../config/Define");
+function addWxConfig(ctx, next) {
+    return __awaiter(this, void 0, void 0, function* () {
+        var body = ctx.request.body;
+        var attr = {
+            plat_id: body.platId,
+            game_id: body.gameId,
+            game_name: body.gameName,
+            power: body.power,
+            config: body.config,
+            server_config: body.server_config,
+            openPresent: body.openPresent,
+            status: 1,
+        };
+        if (yield PlatConfigServices_1.platConfigService.validate_res(ctx)) {
+            var res = yield addConfig(attr);
+            yield LogToDB_1.writeLog(ctx, `保存平台:${JSON.stringify(res)}`);
+            if (res) {
+                ctx.response.body = new iProtocol_1.BaseResp(true, 0, "", res);
+            }
+            else {
+                ctx.response.body = new iProtocol_1.BaseResp(false, ErrorCode_1.ERROR_CODE.ERROR_PLAT_6101, "参数错误");
+            }
+        }
+        else {
+            ctx.response.body = new iProtocol_1.BaseResp(false, ErrorCode_1.ERROR_CODE.ERROR_10, ErrorCode_1.ERROR_MSG.ERROR_10);
+        }
+    });
+}
+function getConfigTables(ctx, next) {
+    return __awaiter(this, void 0, void 0, function* () {
+        var body = ctx.request.body;
+        var res;
+        var loginId = ctx.headers["sessionkey"];
+        if (loginId) {
+            var isSuper = yield PlatConfigServices_1.platConfigService.isSuperAdmin(loginId);
+            if (isSuper) {
+                res = yield DB_1.platDB.sysPlatServerConfigDAO.findAll();
+            }
+            else {
+                var sqlCmd = `select c.* from sys_plat_config c, sys_admins a where a.identity='${loginId}'AND a.material like CONCAT('%',c.game_id,'%')`;
+                res = yield DB_1.platDB.dbClient.query(sqlCmd, { type: 'SELECT' });
+            }
+        }
+        if (res) {
+            ctx.response.body = new iProtocol_1.BaseResp(true, 0, "", res);
+        }
+        else {
+            ctx.response.body = new iProtocol_1.BaseResp(true, ErrorCode_1.ERROR_CODE.PLAT_INFO_6001, "获取平台信息失败");
+        }
+    });
+}
+function getConfig(ctx, next) {
+    return __awaiter(this, void 0, void 0, function* () {
+        var body = ctx.request.body;
+        var game_id = body.game_id;
+        var plat_id = body.plat_id;
+        var ipconfig = yield DB_1.platDB.sysPlatServerConfigDAO.find({
+            where: {
+                game_id: game_id,
+                plat_id: plat_id
+            }
+        });
+        if (ipconfig) {
+            ctx.response.body = new iProtocol_1.BaseResp(true, 0, "", ipconfig);
+        }
+        else {
+            ctx.response.body = new iProtocol_1.BaseResp(true, ErrorCode_1.ERROR_CODE.PLAT_INFO_6001, "获取平台信息失败");
+        }
+    });
+}
+/**
+ *
+ * @param conData
+ */
+function addConfig(conData) {
+    return __awaiter(this, void 0, void 0, function* () {
+        var ipconfig = yield DB_1.platDB.sysPlatServerConfigDAO.find({
+            where: {
+                game_id: conData.game_id,
+                plat_id: conData.plat_id
+            }
+        });
+        if (!ipconfig) {
+            var a = yield DB_1.platDB.sysPlatServerConfigDAO.findOrCreate({
+                where: {
+                    game_id: conData.game_id,
+                    plat_id: conData.plat_id
+                },
+                defaults: {
+                    plat_id: conData.plat_id,
+                    game_id: conData.game_id,
+                    game_name: conData.game_name,
+                    power: conData.power,
+                    openPresent: conData.openPresent,
+                    status: 1,
+                    config: conData.config,
+                    server_config: conData.server_config,
+                }
+            });
+            ipconfig = a["0"];
+        }
+        else {
+            ipconfig.plat_id = conData.plat_id;
+            ipconfig.game_id = conData.game_id;
+            ipconfig.game_name = conData.game_name;
+            ipconfig.power = conData.power;
+            ipconfig.openPresent = conData.openPresent;
+            ipconfig.status = 1;
+            ipconfig.config = conData.config;
+            ipconfig.server_config = conData.server_config;
+            ipconfig.modify_time = "NOW()";
+            ipconfig.save();
+        }
+        return ipconfig;
+    });
+}
+function addGame(ctx, next) {
+    return __awaiter(this, void 0, void 0, function* () {
+        var body = ctx.request.body;
+        if (yield PlatConfigServices_1.platConfigService.validate_res(ctx)) {
+            var gameName = body.gameName;
+            var gameId = body.addGameId;
+            if (gameName) {
+                var gameRres = yield DB_1.platDB.sysPlatGameDAO.find({
+                    where: { game_name: gameName },
+                });
+                if (gameRres) {
+                    ctx.response.body = new iProtocol_1.BaseResp(true, 0, "", gameRres);
+                }
+                else {
+                    try {
+                        var loginId = ctx.headers["sessionkey"];
+                        var loginAdmin = yield PlatConfigServices_1.platConfigService.isSuperAdmin(loginId);
+                        var t = yield DB_1.platDB.dbClient.transaction();
+                        if (loginAdmin) {
+                            try {
+                                var createGame = yield DB_1.platDB.sysPlatGameDAO.create({ game_name: gameName, game_id: Number(gameId) }, { transaction: t });
+                                // var materialIds:number[] = loginAdmin.material ? JSON.parse(loginAdmin.material) : [];
+                                // materialIds.push(Number(gameId));
+                                // loginAdmin.material = JSON.stringify(materialIds);
+                                // await loginAdmin.save({transaction:t});
+                                t.commit();
+                            }
+                            catch (e) {
+                                t.rollback();
+                            }
+                        }
+                        if (createGame) {
+                            yield LogToDB_1.writeLog(ctx, `添加游戏:${createGame.game_name}`);
+                            ctx.response.body = new iProtocol_1.BaseResp(true, 0, "", createGame);
+                        }
+                        else {
+                            ctx.response.body = new iProtocol_1.BaseResp(false, ErrorCode_1.ERROR_CODE.ERROR_PLAT_6102, ErrorCode_1.ERROR_MSG.ERROR_PLAT_6102);
+                        }
+                    }
+                    catch (e) {
+                        ctx.response.body = new iProtocol_1.BaseResp(false, ErrorCode_1.ERROR_CODE.ERROR_PLAT_6102, JSON.stringify(e));
+                    }
+                }
+            }
+        }
+        else {
+            ctx.response.body = new iProtocol_1.BaseResp(false, ErrorCode_1.ERROR_CODE.ERROR_10, ErrorCode_1.ERROR_MSG.ERROR_10);
+        }
+    });
+}
+function deleteGame(ctx, next) {
+    return __awaiter(this, void 0, void 0, function* () {
+        var body = ctx.request.body;
+        var game_id = body.gameId;
+        if (yield PlatConfigServices_1.platConfigService.validate_res(ctx)) {
+            var existAdmins = yield PlatConfigServices_1.platConfigService.selectAdminByGame(game_id);
+            if (existAdmins && existAdmins.length > 0) {
+                var admin_names = [];
+                existAdmins.forEach(element => {
+                    admin_names.push(element.identity);
+                });
+                var msg = `${admin_names.join(",")}管理员包含了该游戏，请前往取消。`;
+                ctx.response.body = new iProtocol_1.BaseResp(false, ErrorCode_1.ERROR_CODE.ERROR_PLAT_6105, msg);
+                return;
+            }
+            var gameInfo = yield DB_1.platDB.sysPlatGameDAO.findOne({ where: { game_id: game_id } });
+            if (gameInfo) {
+                var t = yield DB_1.platDB.dbClient.transaction();
+                try {
+                    yield DB_1.platDB.sysPlatGameDAO.destroy({ where: { game_id: game_id }, transaction: t });
+                    yield DB_1.platDB.sysPlatServerConfigDAO.destroy({ where: { game_id: game_id }, transaction: t });
+                }
+                catch (e) {
+                    t.rollback();
+                    ctx.response.body = new iProtocol_1.BaseResp(false, ErrorCode_1.ERROR_CODE.ERROR_PLAT_6104, e.toString());
+                }
+                t.commit();
+                yield LogToDB_1.writeLog(ctx, `删除游戏id:${game_id},游戏名称:${gameInfo.game_name}`);
+                ctx.response.body = new iProtocol_1.BaseResp(true, 0, "");
+            }
+        }
+        else {
+            ctx.response.body = new iProtocol_1.BaseResp(false, ErrorCode_1.ERROR_CODE.ERROR_10, ErrorCode_1.ERROR_MSG.ERROR_10);
+        }
+    });
+}
+/**
+ * @param ctx 删除配置
+ * @param next
+ */
+function deleteConfig(ctx, next) {
+    return __awaiter(this, void 0, void 0, function* () {
+        var body = ctx.request.body;
+        if (yield PlatConfigServices_1.platConfigService.validate_res(ctx)) {
+            var delCount = yield DB_1.platDB.sysPlatServerConfigDAO.destroy({
+                where: { id: body.id }
+            });
+            if (delCount > 0) {
+                yield LogToDB_1.writeLog(ctx, `删除平台配置id:${body.id}`);
+                ctx.response.body = new iProtocol_1.BaseResp(true, 0, "");
+            }
+            else {
+                ctx.response.body = new iProtocol_1.BaseResp(false, 0, "");
+            }
+        }
+        else {
+            ctx.response.body = new iProtocol_1.BaseResp(false, ErrorCode_1.ERROR_CODE.ERROR_10, ErrorCode_1.ERROR_MSG.ERROR_10);
+        }
+    });
+}
+function getIosApps(ctx, next) {
+    return __awaiter(this, void 0, void 0, function* () {
+        var appinfos = yield DB_1.platDB.getIosAppCache();
+        ctx.response.body = new iProtocol_1.BaseResp(true, 0, "", appinfos);
+    });
+}
+function getAllGames(ctx, next) {
+    return __awaiter(this, void 0, void 0, function* () {
+        var allGames = yield DB_1.platDB.sysPlatGameDAO.findAll();
+        if (allGames) {
+            ctx.response.body = new iProtocol_1.BaseResp(true, 0, "", allGames);
+        }
+        else {
+            ctx.response.body = new iProtocol_1.BaseResp(false, ErrorCode_1.ERROR_CODE.ERROR_PLAT_6103, ErrorCode_1.ERROR_MSG.ERROR_PLAT_6103);
+        }
+    });
+}
+function getAllPromotion(ctx, next) {
+    return __awaiter(this, void 0, void 0, function* () {
+        if (yield PlatConfigServices_1.platConfigService.validate_res(ctx)) {
+            ctx.response.body = new iProtocol_1.BaseResp(false, ErrorCode_1.ERROR_CODE.ERROR_10, ErrorCode_1.ERROR_MSG.ERROR_10);
+        }
+        var allPromotion = yield DB_1.platDB.sysPromotion.findAll();
+        if (allPromotion) {
+            ctx.response.body = new iProtocol_1.BaseResp(true, 0, "", allPromotion);
+        }
+        else {
+            ctx.response.body = new iProtocol_1.BaseResp(false, ErrorCode_1.ERROR_CODE.ERROR_PLAT_6103, ErrorCode_1.ERROR_MSG.ERROR_PLAT_6103);
+        }
+    });
+}
+function editPromotion(ctx, next) {
+    return __awaiter(this, void 0, void 0, function* () {
+        if (yield PlatConfigServices_1.platConfigService.validate_res(ctx)) {
+            ctx.response.body = new iProtocol_1.BaseResp(false, ErrorCode_1.ERROR_CODE.ERROR_10, ErrorCode_1.ERROR_MSG.ERROR_10);
+        }
+        var body = ctx.request.body;
+        var { id, gameId, platId, name, rate = 0, appId, button, channels = "", games = "", showtype = 0, page = "" } = body;
+        if (!gameId || !platId || !button || !appId) {
+            ctx.response.body = new iProtocol_1.BaseResp(false, ErrorCode_1.ERROR_CODE.ERROR_PLAT_6103, ErrorCode_1.ERROR_MSG.ERROR_PLAT_6103);
+            return;
+        }
+        var promotion;
+        if (id) {
+            promotion = yield DB_1.platDB.sysPromotion.findOne({ where: { id: id } });
+            promotion.game_id = gameId;
+            promotion.plat_id = platId;
+            promotion.name = name;
+            promotion.rate = rate;
+            promotion.appId = appId;
+            promotion.button = button;
+            promotion.channels = channels;
+            promotion.games = games;
+            promotion.showtype = showtype;
+            promotion.page = page;
+            yield promotion.save();
+        }
+        else {
+            promotion = yield DB_1.platDB.sysPromotion.create({
+                game_id: gameId,
+                plat_id: platId,
+                name: name,
+                rate: rate,
+                appId: appId,
+                button: button,
+                channels: channels,
+                games: games,
+                showtype: showtype,
+                page: page
+            });
+        }
+        ctx.response.body = new iProtocol_1.BaseResp(true, 0, "", promotion);
+    });
+}
+function login(ctx, next) {
+    return __awaiter(this, void 0, void 0, function* () {
+        var body = ctx.request.body;
+        if (body) {
+            var identity = body.identity;
+            var pwd = body.pwd;
+            var employee = yield PlatConfigServices_1.platConfigService.existEmployee(identity, pwd);
+            if (employee) {
+                var data = {
+                    id: employee.id || 0,
+                    identity: employee.identity || "",
+                    material: employee.material || "",
+                    promise: employee.promise || "",
+                };
+                var session_key = employee.identity + iProtocol_1.Constant.REDIS_CONFIG_SESSION;
+                if (session_key) {
+                    yield PlatRedis_1.platRedis.redis_client.setStringSync(session_key, "true");
+                    yield PlatRedis_1.platRedis.redis_client.setExpire(session_key, 86400);
+                }
+                ctx.response.body = new iProtocol_1.BaseResp(true, 0, "", data);
+            }
+            else {
+                ctx.response.body = new iProtocol_1.BaseResp(false, ErrorCode_1.ERROR_CODE.ERROR_1001, ErrorCode_1.ERROR_MSG.ERROR_1001);
+            }
+        }
+    });
+}
+/**
+ *  添加管理员
+ * @param ctx
+ * @param next
+ */
+function addAdmin(ctx, next) {
+    return __awaiter(this, void 0, void 0, function* () {
+        var body = ctx.request.body;
+        if (body.identity && body.pwd) {
+            var loginId = ctx.headers["sessionkey"];
+            var material = body.selectGames ? JSON.stringify(body.selectGames) : "";
+            if (loginId) {
+                var user_adm = yield DB_1.platDB.sysAdminDAO.findOne({ where: { identity: loginId } });
+                if (user_adm && user_adm.promise == Define_1.ADMINS_TYPE.admin) {
+                    var old = yield DB_1.platDB.sysAdminDAO.findOne({ where: { identity: body.identity } });
+                    if (old) {
+                        ctx.response.body = new iProtocol_1.BaseResp(false, ErrorCode_1.ERROR_CODE.ERROR_1002, ErrorCode_1.ERROR_MSG.ERROR_1002);
+                    }
+                    else {
+                        //添加用户成功
+                        var res = yield DB_1.platDB.sysAdminDAO.create({
+                            identity: body.identity,
+                            pwd: body.pwd,
+                            material: material
+                        });
+                        ctx.response.body = new iProtocol_1.BaseResp(true, 0, "");
+                    }
+                }
+                else {
+                    ctx.response.body = new iProtocol_1.BaseResp(true, ErrorCode_1.ERROR_CODE.ERROR_1003, ErrorCode_1.ERROR_MSG.ERROR_1003);
+                }
+            }
+        }
+    });
+}
+/**更新管理员信息 */
+function modfiyPassword(ctx, next) {
+    return __awaiter(this, void 0, void 0, function* () {
+        var body = ctx.request.body;
+        if (body.identity && body.pwd) {
+            var loginId = ctx.headers["sessionkey"];
+            if (loginId) {
+                var user_adm = yield DB_1.platDB.sysAdminDAO.findOne({ where: { identity: loginId } });
+                if (user_adm) {
+                    var old = yield DB_1.platDB.sysAdminDAO.findOne({ where: { identity: body.identity } });
+                    if (old) {
+                        old.pwd = body.pwd;
+                        yield old.save();
+                        ctx.response.body = new iProtocol_1.BaseResp(true, 0, "");
+                    }
+                    else {
+                        ctx.response.body = new iProtocol_1.BaseResp(false, ErrorCode_1.ERROR_CODE.ERROR_1002, ErrorCode_1.ERROR_MSG.ERROR_1002);
+                    }
+                }
+            }
+            else {
+                ctx.response.body = new iProtocol_1.BaseResp(false, ErrorCode_1.ERROR_CODE.ERROR_5000, ErrorCode_1.ERROR_MSG.ERROR_5000);
+            }
+        }
+    });
+}
+function modfiyMaterial(ctx, next) {
+    return __awaiter(this, void 0, void 0, function* () {
+        var body = ctx.request.body;
+        if (body.identity && body.material) {
+            var loginId = ctx.headers["sessionkey"];
+            if (loginId) {
+                if (PlatConfigServices_1.platConfigService.isSuperAdmin(loginId)) {
+                    var old = yield DB_1.platDB.sysAdminDAO.findOne({ where: { identity: body.identity } });
+                    if (old) {
+                        old.material = JSON.stringify(body.material);
+                        yield old.save();
+                        ctx.response.body = new iProtocol_1.BaseResp(true, 0, "");
+                    }
+                    else {
+                        ctx.response.body = new iProtocol_1.BaseResp(false, ErrorCode_1.ERROR_CODE.ERROR_5000, ErrorCode_1.ERROR_MSG.ERROR_5000);
+                    }
+                }
+                else {
+                    ctx.response.body = new iProtocol_1.BaseResp(false, ErrorCode_1.ERROR_CODE.ERROR_1004, ErrorCode_1.ERROR_MSG.ERROR_1004);
+                }
+            }
+            else {
+                ctx.response.body = new iProtocol_1.BaseResp(false, ErrorCode_1.ERROR_CODE.ERROR_10, ErrorCode_1.ERROR_MSG.ERROR_10);
+            }
+        }
+        else {
+            ctx.response.body = new iProtocol_1.BaseResp(false, ErrorCode_1.ERROR_CODE.ERROR_5000, ErrorCode_1.ERROR_MSG.ERROR_5000);
+        }
+    });
+}
+/**
+ *
+ * @param ctx       所有用户管理员
+ * @param next
+ */
+function allAdmin(ctx, next) {
+    return __awaiter(this, void 0, void 0, function* () {
+        var loginId = ctx.headers["sessionkey"];
+        if (loginId) {
+            if (PlatConfigServices_1.platConfigService.isSuperAdmin(loginId)) {
+                var users = yield DB_1.platDB.sysAdminDAO.all();
+                if (users) {
+                    ctx.response.body = new iProtocol_1.BaseResp(true, 0, "", users);
+                }
+                else {
+                    ctx.response.body = new iProtocol_1.BaseResp(false, 0, ErrorCode_1.ERROR_MSG.ERROR_5001);
+                }
+            }
+            else {
+                ctx.response.body = new iProtocol_1.BaseResp(false, 0, ErrorCode_1.ERROR_MSG.ERROR_1003);
+            }
+        }
+        else {
+            ctx.response.body = new iProtocol_1.BaseResp(false, 0, ErrorCode_1.ERROR_MSG.ERROR_10);
+        }
+    });
+}
+module.exports = {
+    "POST /Game/addWxConfig": addWxConfig,
+    "POST /Game/configTables": getConfigTables,
+    "POST /Game/getConfig": getConfig,
+    "POST /Game/addGame": addGame,
+    "POST /Game/allGames": getAllGames,
+    "POST /Game/deleteGame": deleteGame,
+    "POST /Game/deleteConfig": deleteConfig,
+    "POST /Game/getIosApps": getIosApps,
+    "POST /Game/getAllPromotion": getAllPromotion,
+    "POST /Game/editPromotion": editPromotion,
+    "POST /Game/addAdmin": addAdmin,
+    "POST /Game/modfiyAdmin": modfiyPassword,
+    "POST /Game/login": login,
+    "POST /Game/allAdmin": allAdmin,
+    "POST /Game/modfiyMaterial": modfiyMaterial,
+};
+//# sourceMappingURL=PlatServerConfig.js.map

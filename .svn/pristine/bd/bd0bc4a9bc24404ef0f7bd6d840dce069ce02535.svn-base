@@ -1,0 +1,10 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const PlatBase_1 = require("./PlatBase");
+class PlatQQServer extends PlatBase_1.PlatBaseServer {
+    constructor() {
+        super();
+    }
+}
+exports.PlatQQServer = PlatQQServer;
+//# sourceMappingURL=PlatQQServer.js.map

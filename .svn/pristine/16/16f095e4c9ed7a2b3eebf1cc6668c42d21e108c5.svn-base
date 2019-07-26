@@ -1,0 +1,35 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.Define = {
+    writeLogFile: true,
+    rootPath: "",
+    port: 1234,
+};
+exports.PlatIds = {
+    WX: 1001,
+    QQ: 1002,
+    FACE_BOOK: 1003
+};
+class SDKUser {
+    constructor(zxId, name, avatar, loginToken, money) {
+        this.zxId = zxId;
+        this.name = name;
+        this.avatar = avatar;
+        this.loginToken = loginToken;
+        this.money = money;
+    }
+}
+exports.SDKUser = SDKUser;
+class PlatUser {
+    constructor(userId, sKey) {
+        this.userId = userId;
+        this.sKey = sKey;
+    }
+}
+exports.PlatUser = PlatUser;
+var ADMINS_TYPE;
+(function (ADMINS_TYPE) {
+    ADMINS_TYPE["admin"] = "\u8D85\u7EA7\u7BA1\u7406\u5458";
+    ADMINS_TYPE["game"] = "\u6E38\u620F\u7BA1\u7406\u5458";
+})(ADMINS_TYPE = exports.ADMINS_TYPE || (exports.ADMINS_TYPE = {}));
+//# sourceMappingURL=Define.js.map

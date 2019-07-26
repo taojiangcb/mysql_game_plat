@@ -1,0 +1,21 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const sequelize = require("sequelize");
+const MySqlDefine_1 = require("../MySqlDefine");
+const MySqlClient_1 = require("../../database/mysqlDao/MySqlClient");
+exports.tableName = MySqlDefine_1.TABLE_NAME.sys_ios_app;
+exports.column = {
+    app_id: { type: sequelize.STRING(50), primaryKey: true, allowNull: false },
+    app_name: { type: sequelize.STRING(50) },
+    secret: { type: sequelize.STRING(50) },
+    mch_id: { type: sequelize.STRING(50) },
+    sign_key: { type: sequelize.STRING(50) },
+    app_index: { type: sequelize.TINYINT(2) },
+    state: { type: sequelize.TINYINT(2) },
+    create_time: { type: sequelize.DATE, get() {
+            return new Date(this.getDataValue("create_time").getTime());
+        } },
+};
+exports.opts = MySqlClient_1.defColumnOpts;
+exports.sync_opt = MySqlClient_1.defSyncOpts;
+//# sourceMappingURL=sys_ios_app.js.map

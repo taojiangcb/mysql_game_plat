@@ -1,0 +1,30 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.Define = {
+    writeLogFile: true,
+    rootPath: "",
+    port: 1234,
+};
+exports.PlatIds = {
+    WX: 1001,
+    QQ: 1002,
+    FACE_BOOK: 1003
+};
+class SDKUser {
+    constructor(zxId, name, avatar, loginToken, money) {
+        this.zxId = zxId;
+        this.name = name;
+        this.avatar = avatar;
+        this.loginToken = loginToken;
+        this.money = money;
+    }
+}
+exports.SDKUser = SDKUser;
+class PlatUser {
+    constructor(userId, sKey) {
+        this.userId = userId;
+        this.sKey = sKey;
+    }
+}
+exports.PlatUser = PlatUser;
+//# sourceMappingURL=Define.js.map

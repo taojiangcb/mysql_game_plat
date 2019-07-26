@@ -1,0 +1,19 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const CN_1 = require("../language/CN");
+class RespBase {
+    constructor(succeed, errCode = 0, data) {
+        this.errorCode = 0;
+        this.succeed = succeed;
+        this.data = data;
+        this.errorCode;
+        if (errCode != 0 && !data) {
+            let errMsg = CN_1.ErrorLanguage[this.errorCode];
+            if (errMsg) {
+                data = errMsg;
+            }
+        }
+    }
+}
+exports.RespBase = RespBase;
+//# sourceMappingURL=RespBase.js.map

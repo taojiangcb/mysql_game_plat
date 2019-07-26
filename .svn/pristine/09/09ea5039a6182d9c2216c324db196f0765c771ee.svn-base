@@ -1,0 +1,33 @@
+"use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const PlatConfigServices_1 = require("../services/PlatConfigServices");
+const iProtocol_1 = require("../iProtocol");
+const ErrorCode_1 = require("../ErrorCode");
+function login_validate(ctx, next) {
+    return __awaiter(this, void 0, void 0, function* () {
+        console.log("action url" + ctx.url);
+        if (ctx.url.startsWith("/Game")) {
+            if (ctx.url.startsWith("/Game/login")) {
+                return yield next();
+            }
+            else {
+                var bol = yield PlatConfigServices_1.platConfigService.validate_res(ctx);
+                if (!bol) {
+                    ctx.response.body = new iProtocol_1.BaseResp(false, ErrorCode_1.ERROR_CODE.ERROR_10, ErrorCode_1.ERROR_MSG.ERROR_10);
+                    return;
+                }
+            }
+        }
+        return yield next();
+    });
+}
+exports.login_validate = login_validate;
+//# sourceMappingURL=login_validate.js.map

@@ -1,0 +1,17 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const sequelize = require("sequelize");
+const MySqlDefine_1 = require("../MySqlDefine");
+const MySqlClient_1 = require("../../database/mysqlDao/MySqlClient");
+exports.tableName = MySqlDefine_1.TABLE_NAME.sys_plat_log;
+exports.column = {
+    id: { type: sequelize.INTEGER(11), primaryKey: true },
+    identity: { type: sequelize.STRING(60), allowNull: true },
+    log: { type: sequelize.TEXT, allowNull: true },
+    createTime: { type: sequelize.DATE, get() {
+            return new Date(this.getDataValue("createTime")).getTime();
+        } },
+};
+exports.opts = MySqlClient_1.defColumnOpts;
+exports.sync_opt = MySqlClient_1.defSyncOpts;
+//# sourceMappingURL=sys_plat_log.js.map

@@ -1,0 +1,75 @@
+"use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const MySqlDefine_1 = require("./MySqlDefine");
+class DB {
+    constructor() {
+        this.iosApp = null;
+    }
+    get sysPlatServerConfigDAO() {
+        if (this.mysql_client) {
+            return this.mysql_client.getTable(MySqlDefine_1.TABLE_NAME.sys_plat_config);
+        }
+        return null;
+    }
+    get sysPlatGameDAO() {
+        if (this.mysql_client) {
+            return this.mysql_client.getTable(MySqlDefine_1.TABLE_NAME.sys_plat_game);
+        }
+        return null;
+    }
+    get sysPromotion() {
+        if (this.mysql_client) {
+            return this.mysql_client.getTable(MySqlDefine_1.TABLE_NAME.sys_promotion);
+        }
+        return null;
+    }
+    get sysIosAppDao() {
+        if (this.mysql_client) {
+            return this.mysql_client.getTable(MySqlDefine_1.TABLE_NAME.sys_ios_app);
+        }
+        return null;
+    }
+    get sysPlatLogDAO() {
+        if (this.mysql_client) {
+            return this.mysql_client.getTable(MySqlDefine_1.TABLE_NAME.sys_plat_log);
+        }
+        return null;
+    }
+    get sysAdminDAO() {
+        if (this.mysql_client) {
+            return this.mysql_client.getTable(MySqlDefine_1.TABLE_NAME.sys_admins);
+        }
+        return null;
+    }
+    get dbClient() {
+        if (this.mysql_client) {
+            return this.mysql_client.sequelizeClient;
+        }
+    }
+    getIosAppCache() {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (this.iosApp)
+                return this.iosApp;
+            if (this.sysIosAppDao) {
+                let iosAppDatas = yield this.sysIosAppDao.findAll();
+                if (iosAppDatas.length > 0) {
+                    this.iosApp = [];
+                    iosAppDatas.forEach(element => {
+                        this.iosApp.push(element);
+                    });
+                }
+            }
+            return this.iosApp;
+        });
+    }
+}
+exports.platDB = new DB();
+//# sourceMappingURL=DB.js.map

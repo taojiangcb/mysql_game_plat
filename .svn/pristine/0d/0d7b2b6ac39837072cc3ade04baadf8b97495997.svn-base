@@ -1,0 +1,26 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const app_1 = require("../../app");
+exports.TABLE_NAME = {
+    sys_user: "sys_user",
+    sys_admins: "sys_admins",
+    sys_plat_config: "sys_plat_config",
+    sys_promotion: "sys_promotion",
+    sys_ios_app: "sys_ios_app",
+    sys_plat_game: "sys_plat_game",
+    sys_plat_log: "sys_plat_log",
+};
+exports.game_plat_define = {
+    opts: () => {
+        let opts = {
+            host: app_1.config.my_sql.host,
+            port: app_1.config.my_sql.port,
+            dialect: "mysql",
+            username: app_1.config.my_sql.user,
+            password: app_1.config.my_sql.password,
+            database: app_1.config.my_sql.database,
+        };
+        return opts;
+    },
+};
+//# sourceMappingURL=MySqlDefine.js.map

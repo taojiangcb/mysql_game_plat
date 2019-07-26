@@ -1,0 +1,22 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const sequelize = require("sequelize");
+const MySqlDefine_1 = require("../MySqlDefine");
+const MySqlClient_1 = require("../../database/mysqlDao/MySqlClient");
+exports.tableName = MySqlDefine_1.TABLE_NAME.sys_promotion;
+exports.column = {
+    id: { type: sequelize.INTEGER(6), primaryKey: true, allowNull: false },
+    game_id: { type: sequelize.INTEGER },
+    plat_id: { type: sequelize.INTEGER },
+    name: { type: sequelize.STRING(20) },
+    rate: { type: sequelize.INTEGER },
+    appId: { type: sequelize.STRING(50) },
+    button: { type: sequelize.STRING(200) },
+    channels: { type: sequelize.STRING(200) },
+    games: { type: sequelize.STRING(50) },
+    showtype: { type: sequelize.INTEGER },
+    page: { type: sequelize.STRING(100) },
+};
+exports.opts = MySqlClient_1.defColumnOpts;
+exports.sync_opt = MySqlClient_1.defSyncOpts;
+//# sourceMappingURL=sys_promotion.js.map

@@ -1,0 +1,15 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const sequelize = require("sequelize");
+const MySqlDefine_1 = require("../MySqlDefine");
+const MySqlClient_1 = require("../../database/mysqlDao/MySqlClient");
+exports.tableName = MySqlDefine_1.TABLE_NAME.sys_plat_game;
+exports.column = {
+    game_id: { type: sequelize.INTEGER, primaryKey: true, allowNull: false },
+    game_name: { type: sequelize.STRING(200) },
+    create_time: { type: sequelize.DATE, get() { return new Date(this.getDataValue("create_time")).getTime(); } },
+    modify_time: { type: sequelize.DATE, get() { return new Date(this.getDataValue("modify_time")).getTime(); } },
+};
+exports.opts = MySqlClient_1.defColumnOpts;
+exports.sync_opt = MySqlClient_1.defSyncOpts;
+//# sourceMappingURL=sys_plat_game.js.map
