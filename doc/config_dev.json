@@ -8,6 +8,7 @@
         "database": "plat_oa",
         "tables": {
             "sys_user": 1,
+            "sys_user_login": 1,
             "sys_user_plat": 1,
             "sys_user_game": 1
         }

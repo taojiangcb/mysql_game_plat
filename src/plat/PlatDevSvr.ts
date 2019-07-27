@@ -1,7 +1,7 @@
 import { PlatBaseSvr } from "./PlatBaseSvr";
 import { Context } from "koa";
 import { platUsersDB } from "../mysql_plat_users/PlatUsersDB";
-import { iPlatLoginResp, RespBase } from "../RESUL";
+import { RespBase } from "../RESUL";
 import { cacheMgr } from "../mgr/Mgr";
 import { platConfigService } from "../controllers/PlatConfigOA";
 import { ERROR_CODE, ERROR_MSG } from "../ErrorCode";
@@ -20,10 +20,10 @@ export class PlatDevSvr extends PlatBaseSvr {
 
         var userId = user + pwd;
         
-        let userDao = platUsersDB.sysUserDAO(userId);
+        let userDao = platUsersDB.sys_user_dao(userId);
         let userData = await userDao.findOne({where:{ user_id:userId }})
 
-        let loginResp:iPlatLoginResp = {};
+        let loginResp:mgsdk.iPlatLoginResp = {};
         let platUser:mgsdk.iPlatUser = {};
 
         if(!userData) {

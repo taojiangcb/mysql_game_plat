@@ -109,7 +109,7 @@ async function appStart() {
 
     managerInit();
 
-    /** 初始化数据库 */
+    /** 初始化平台数据库 */
     platDB.mysql_client = await mySqlMgr.createMySql(game_plat_oa_define.opts());
     var module_url:string = path.join(__dirname,"src/mysql_game_plat/tables");
     await platDB.mysql_client.loadModel(module_url);

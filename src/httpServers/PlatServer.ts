@@ -1,7 +1,7 @@
 import { Context } from "koa";
 import { platRedis } from "../redis_clients/PlatRedis";
 import { ISysPlatConfigDAO, ISysPlatConfigDAOAtt } from "../mysql_game_plat/tables/sys_plat_config";
-import { RespBase, sendResponse, iPlatInfoResp } from "../RESUL";
+import { RespBase, sendResponse } from "../RESUL";
 import { ERROR_CODE, ERROR_MSG } from "../ErrorCode";
 import { platDB } from "../mysql_game_plat/PlatDB";
 import sequelize = require("sequelize");
@@ -63,7 +63,7 @@ async function getPlatInfo(ctx:Context,next) {
     var platConfig:ISysPlatConfigDAOAtt[];
     let {plat,gameId} = body;
 
-    let resp:iPlatInfoResp = {}
+    let resp:mgsdk.iPlatInfoResp = {}
 
     if(plat && gameId) {
         let configItem:ISysPlatConfigDAOAtt = null;

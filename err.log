@@ -279,3 +279,5 @@
     at TCP.onStreamRead (internal/stream_base_commons.js:111:27) errno: 'ETIMEDOUT', code: 'ETIMEDOUT', syscall: 'read' } []
 [2019-07-26T12:00:04.108] [INFO] info - reconnecting[object Object]|undefined []
 [2019-07-26T12:00:04.149] [INFO] info - redis 连接成功!! []
+[2019-07-27T20:38:31.055] [INFO] info - redis 连接成功!! []
+[2019-07-27T20:38:37.218] [INFO] info - server runing on port 3005 []

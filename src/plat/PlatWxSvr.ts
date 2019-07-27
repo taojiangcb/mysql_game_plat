@@ -1,5 +1,5 @@
 import { PlatBaseSvr } from "./PlatBaseSvr";
-import { RespBase, BaseThirdUserIdResp } from "../RESUL";
+import { RespBase} from "../RESUL";
 import { platConfigService } from "../controllers/PlatConfigOA";
 import { ERROR_CODE, ERROR_MSG } from "../ErrorCode";
 import { Log } from "../log/Log";
@@ -12,7 +12,8 @@ export class PlatWxSvr extends PlatBaseSvr {
 
     async login(ctx):Promise<RespBase> {
         var body = ctx.request.body;
-        let {platId,gameId} = body;
+        let {platId,gameId,fromChannel,fromUser,fromAppid} = body;
+        let platUser:mgsdk.iPlatUser = body.platUser;
 
         let platConfig = await platConfigService.getConfigByCache(platId,gameId);
         if(!platConfig) {
@@ -20,32 +21,64 @@ export class PlatWxSvr extends PlatBaseSvr {
         }
 
         let wxResp = await this.validateLogin(body);
+        /**微信登录失败 */
         if (wxResp.errMsg) return new RespBase(false, ERROR_CODE.ERROR_5001, wxResp.errMsg);
 
         let data = wxResp.data;
         var openId = data.openid, userId = '', unionId = data.unionId;
         var sKey = data.session_key;
 
-        if (body.platUser.content) {
-            var iv = body.platUser.content.iv;
-            var encryptData = body.platUser.content.encryptData;
+        if (platUser.content) {
+            var iv = platUser.content.iv;
+            var encryptData = platUser.content.encryptData;
             // 解密获取微信账号唯一id
             unionId = this.unPackEncryptedData(encryptData, iv, sKey);
         }
 
-        let userDao = platUsersDB.sysUserDAO(openId);
-        let userPlat = await userDao.findOne({
-            where:{open_id:openId,plat_id:platId,game_id:gameId,}
-        })
-        if(userPlat) {
-            userId = userPlat.user_id;
+        let userDao = platUsersDB.sys_user_dao(openId);
+        let userData = await userDao.findOne({ where:{open_id:openId,plat_id:platId,game_id:gameId,} })
+        if(userData) {
+            userId = userData.user_id;
+
+            /**是否更新头像和名称数据 */
+            let changeFlag:boolean = false;
+            
+            if(platUser.avatar != userData.avatar) {
+                userData.avatar = platUser.avatar;
+                changeFlag = true;
+            }
+
+            if(platUser.naickName != userData.nickname) {
+                userData.nickname = platUser.naickName;
+                changeFlag = true;
+            }
+
+            if(changeFlag) await userData.save();
+
         }
         else {
             userId = this.generalUserId();
+            userData = await userDao.create({
+                user_id:userId,plat_id:platId,game_id:gameId,
+                fromAppId:fromAppid,fromChannel:fromChannel,fromUser:fromUser,
+                nickname:platUser.naickName,avatar:platUser.avatar
+            });
         }
 
+        await this.saveLoginTime(userId);
+
+        /**获取登录的token */
+        platUser.loginToken = await this.getLoginToken(userId);
+        let loginResp:mgsdk.iPlatLoginResp = { user:platUser }
+
+        return new RespBase(true,0,'',loginResp);
+        
     }
 
+    /**
+     * 微信平台验证用户登录
+     * @param body 
+     */
     async validateLogin(body:any) {
           // 从缓存红获取请求的APPID, SECRET
           let result: WxUserIdResp = {};
@@ -111,6 +144,6 @@ interface WxLoginResp {
     errmsg: string;
 }
 
-interface WxUserIdResp extends BaseThirdUserIdResp {
+interface WxUserIdResp extends mgsdk.BaseThirdUserIdResp {
     data?: WxLoginResp;
 }

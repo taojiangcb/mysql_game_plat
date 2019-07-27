@@ -15,9 +15,11 @@ export interface sys_user_attrs {
     nickname?:string;
     money?:number;
     totalPay?:number;
+    fromChannel?:string;
+    fromAppId?:string;
+    fromUser?:string;
     create_time?:number;
     update_time?:number;
-    login_time?:number;
 }
 
 /*** sequelize define 之后操作的对象 的类型定义 */
@@ -33,16 +35,15 @@ export var column:sequelize.DefineAttributes = {
     nickname: { type: sequelize.STRING(60) },
     money: { type: sequelize.DECIMAL(10), defaultValue: 0 },
     totalPay: { type: sequelize.DECIMAL(10), defaultValue: 0 },
-    login_token: { type: sequelize.STRING(300) },
+    fromChannel: { type: sequelize.STRING(255) },
+    fromAppId: { type: sequelize.STRING(255) },
+    fromUser: { type: sequelize.STRING(255) },
     create_time: { type: sequelize.DATE, defaultValue: new Date(),get(){
         return new Date(this.getDataValue("create_time")).getTime();
     }},
     update_time: { type: sequelize.DATE, defaultValue: new Date(),get(){
         return new Date(this.getDataValue("update_time")).getTime();
     }},
-    login_time: { type: sequelize.DATE, defaultValue: new Date(),get(){
-        return new Date(this.getDataValue("login_time")).getTime();
-    }}
 }
 
 export var opts:sequelize.DefineOptions<sys_user_table> = defColumnOpts;

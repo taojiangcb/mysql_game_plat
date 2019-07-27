@@ -10,6 +10,7 @@ export const TABLE_NAME = {
     sys_ios_app:"sys_ios_app",
     sys_plat_game:"sys_plat_game",
     sys_plat_log:"sys_plat_log",
+    sys_user_login:"sys_user_login",
 }
 
 export var game_plat_oa_define = {

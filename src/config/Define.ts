@@ -8,6 +8,7 @@ export interface IConfig {
         database:string;
         tables?:{
             sys_user?:number,
+            sys_user_login?:number,
             sys_user_plat?:number,
             sys_user_game?:number
         };
@@ -75,10 +76,13 @@ export enum ADMINS_TYPE {
     game = '游戏管理员'
 }
 
-export const REDIS_KEY = { PLAT_CONFIGS:"platConfigs" }
+export const REDIS_KEY = { 
+    PLAT_CONFIGS:"platConfigs",
+    REDIS_TOKEN:'redis_token',
+}
 
 export var SDK_MODE = {
-    DEBUG:0,
-    TEST:1,
-    ONLINE:2,
+    DEBUG:0,                    //开发
+    TEST:1,                     //线上测试
+    ONLINE:2,                   //线上生产
 }
