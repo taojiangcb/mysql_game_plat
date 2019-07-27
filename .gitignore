@@ -1,5 +1,5 @@
 /node_modules
 /bin
-/logs
-.svn
+logs/
+.svn/
 
