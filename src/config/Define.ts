@@ -76,3 +76,9 @@ export enum ADMINS_TYPE {
 }
 
 export const REDIS_KEY = { PLAT_CONFIGS:"platConfigs" }
+
+export var SDK_MODE = {
+    DEBUG:0,
+    TEST:1,
+    ONLINE:2,
+}

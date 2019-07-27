@@ -1,16 +1,18 @@
 import { Context } from "koa";
 import { platRedis } from "../redis_clients/PlatRedis";
 import { ISysPlatConfigDAO, ISysPlatConfigDAOAtt } from "../mysql_game_plat/tables/sys_plat_config";
-import { RespBase, sendResponse } from "../RESUL";
+import { RespBase, sendResponse, iPlatInfoResp } from "../RESUL";
 import { ERROR_CODE, ERROR_MSG } from "../ErrorCode";
 import { platDB } from "../mysql_game_plat/PlatDB";
 import sequelize = require("sequelize");
 import { REDIS_KEY } from "../config/Define";
 import { cacheMgr } from "../mgr/Mgr";
 import { platConfigService } from "../controllers/PlatConfigOA";
+import { login_validate } from "../middlewares/login_validate";
+import { RedisClient } from "redis";
 
 
-async function getPlatInfo(ctx:Context,next) {
+async function getPlatInfo_redis(ctx:Context,next) {
     var body = ctx.request.body;
     var platConfig:ISysPlatConfigDAO;
     let {platId,gameId} = body;
@@ -56,25 +58,33 @@ async function getPlatInfo(ctx:Context,next) {
     }
 }
 
-async function getPlatInfoFormCache(ctx:Context,next) {
+async function getPlatInfo(ctx:Context,next) {
     var body = ctx.request.body;
     var platConfig:ISysPlatConfigDAOAtt[];
-    let {platId,gameId} = body;
-    if(platId && gameId) {
-        let configItem:ISysPlatConfigDAOAtt = await platConfigService.getConfigByCache(platId,gameId) as ISysPlatConfigDAOAtt;
+    let {plat,gameId} = body;
+
+    let resp:iPlatInfoResp = {}
+
+    if(plat && gameId) {
+        let configItem:ISysPlatConfigDAOAtt = null;
+        if(!cacheMgr.isExpired(REDIS_KEY.PLAT_CONFIGS)) {
+            configItem = await platConfigService.getConfigByCache(plat,gameId) as ISysPlatConfigDAOAtt;
+        }
         if(configItem) {
-            sendResponse(ctx,new RespBase(true,0,'',configItem));
+            resp.cli_config = configItem.config;
+            sendResponse(ctx,new RespBase(true,0,'',resp));
             return;
         }
         else {
             platConfig = await platDB.sysPlatServerConfigDAO.findAll();
             cacheMgr.set(REDIS_KEY.PLAT_CONFIGS,platConfig,60);
             platConfig.forEach(element => {
-                if(gameId === element.game_id && platId === element.plat_id) {
+                if(gameId === element.game_id && plat === element.plat_id) {
                     configItem = element;
                 }
             });
-            sendResponse(ctx,new RespBase(true,0,'',configItem));
+            resp.cli_config = configItem.config;
+            sendResponse(ctx,new RespBase(true,0,'',resp));
             return;
         }
     }
@@ -88,5 +98,5 @@ async function getPlatInfoFormCache(ctx:Context,next) {
 
 module.exports = {
     "POST /platServer/getPlatInfo":getPlatInfo,
-    "POST /platServer/getPlatInfoAndCache":getPlatInfoFormCache
+    "POST /platServer/getPlatInfo_redis":getPlatInfo_redis
 }

@@ -22,6 +22,7 @@ import { whereStatic } from "sequelize";
 import { ws } from "./src/websocket/WebSocketServer";
 import { platUsersDB } from "./src/mysql_plat_users/PlatUsersDB";
 import { managerInit } from "./src/mgr/Mgr";
+import { simpleError } from "./src/error/ErrorHandler";
 
 var app = new Koa();
 let router = new Router();
@@ -132,19 +133,16 @@ async function appStart() {
     var redisHelp:RedisHelp = new RedisHelp();          
     await redisHelp.init(redisOpt);
     platRedis.redis_client = redisHelp;
+
+    app.on("error",simpleError);
+
     initHttpServers();
-    
+
     app.use(koaCors({credentials:true}))
     app.use(bodyparser({enableTypes:["json","from","xml"]}))
     app.use(login_validate);
     app.use(router.routes());
     testSvr = app.listen(Define.port);
-    app.onerror = (err:Error)=>{
-        var msg = err.message || "";
-        var stack = err.stack || "";
-        var err_msg = `${msg}==${stack}`
-        Log.errorLog(err_msg);
-    }
     Log.infoLog(`server runing on port ${Define.port}`);
 }
 appStart();

@@ -7,41 +7,59 @@ export class CacheMgr {
     }
 
     set(key:string,val:any,second?:number) {
+
+        let second_time:number = second || 0;   
+        let expire_time:number = second_time > 0 ? Date.now() + second_time * 1000 : 0;
+
         if(this.cacheMap.has(key)) {
             let cache = this.cacheMap.get(key);
             cache.data = val;
+            cache.expires = expire_time;
         }
         else {
-            let cache = new CacheItem(val,Date.now() + second * 1000);
+            let cache = new CacheItem(val,expire_time);
             this.cacheMap.set(key,cache);
         }
     }
 
     get(key) {
-        return this.exists(key) 
-            ? this.cacheMap.get(key).data 
-            : null;
+        let cacheItem = this.cacheMap.get(key);
+        return cacheItem.data;
     }
 
     expires(key:string,second:number):void {
+
+        let second_time:number = second || 0;   
+        let expire_time:number = second_time > 0 ? Date.now() + second_time * 1000 : 0;
+
         if(this.cacheMap.has(key)) {
             let cache = this.cacheMap.get(key);
-            cache.expires = Date.now() + second * 1000;
+            cache.expires = expire_time;
         }
     }
 
     exists(key:string):boolean {
+        return this.cacheMap.has(key);
+    }
+
+    /**
+     * 是否过期了
+     * @param key 
+     */
+    isExpired(key):boolean {
         if(this.cacheMap.has(key)) {
             let item = this.cacheMap.get(key);
-            if(item) {
-                if(item.expires === 0) return true;
-                if(Date.now() < item.expires) return true;
-                this.cacheMap.delete(key);
-                return false;
-            }
+            return this.isExpires(item);
         }
-        return false;
+        return true;
     }
+
+    delete(key:string) {
+        if(this.cacheMap.has(key)) {
+            this.cacheMap.delete(key);
+        }
+    }
+      
 
     sizeAndClear():number {
         let del:string[] = [];
