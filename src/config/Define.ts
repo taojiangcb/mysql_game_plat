@@ -10,7 +10,7 @@ export interface IConfig {
             sys_user?:number,
             sys_user_login?:number,
             sys_user_plat?:number,
-            sys_user_game?:number
+            sys_user_game?:number,
         };
     },
     my_sql_plat_users:{
@@ -22,6 +22,7 @@ export interface IConfig {
         database:string;
         tables?:{
             sys_user?:number,
+            sys_order?:number
         };
     },
     redis:{

@@ -11,6 +11,7 @@ export const TABLE_NAME = {
     sys_plat_game:"sys_plat_game",
     sys_plat_log:"sys_plat_log",
     sys_user_login:"sys_user_login",
+    sys_order:"sys_oroder",
 }
 
 export var game_plat_oa_define = {

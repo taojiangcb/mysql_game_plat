@@ -5,7 +5,8 @@ export enum ERROR_CODE {
     ERROR_1002 = 1002,                  //用户已经存在
     ERROR_1003 = 1003,                  //不是超级管理员
     ERROR_1004 = 1004,                  //权限不够
-    ERROR_1005 = 1005,                  //权限不够
+    ERROR_1005 = 1005,                  //数据不存在
+    ERROR_1006 = 1006,                  //Token 失效
     
     ERROR_5000 = 5000,                  //入参不正确
     ERROR_5001 = 5001,                  //失败
@@ -40,6 +41,7 @@ export const ERROR_MSG = {
     ERROR_1002:"用户已经存在",
     ERROR_1004:"权限不够",
     ERROR_1005:"数据不存在",
+    ERROR_1006:"loginToke 失效",
 
     ERROR_5000:"参数不正确",
     ERROR_5001: "没有管理员",

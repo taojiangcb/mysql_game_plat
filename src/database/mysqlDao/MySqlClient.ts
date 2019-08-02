@@ -2,6 +2,8 @@ import sequelize = require("sequelize");
 import fs = require("fs");
 import path = require("path");
 import { EventEmitter } from "events";
+import { SysTool } from "../../util/tools";
+import { TABLE_NAME } from "../../mysql_define/MySqlDefine";
 
 
 /**
@@ -117,6 +119,24 @@ export class MySqlClient extends EventEmitter {
      */
     getTable<TInst,Attr>(tableName:string):sequelize.Model<TInst,Attr> {
         return this.tables[tableName];
+    }
+
+     /**
+     * 获取数据表模型
+     * @param id                    用户id
+     * @param tableName             数据表名称
+     * @param len                   数据表长度
+     */
+    get_table_model<TABLE,ATT>(id:string,tableName:string,len:number) {
+        if(this.dbClient) {
+            let table_model = this.getTable<TABLE,ATT>(tableName);
+            var table_name = id 
+                ? SysTool.getTableName(id,tableName,len)
+                : TABLE_NAME.sys_user;
+            table_model['tableName']= table_name;
+            return table_model;
+        }
+        return null;
     }
 
     get sequelizeClient():sequelize.Sequelize {
