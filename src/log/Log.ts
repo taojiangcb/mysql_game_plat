@@ -5,6 +5,25 @@ import { Define } from "../config/Define";
 import path = require("path");
 
 
+/**
+ * 在子进程中写log是传入的的参数
+ */
+type ChildProcessOpt = {
+    process_name:string,                //日志显示的进程名字
+    process_id:number,                  //就是进程id
+    appDir:string                       //输出日志的主目录
+}
+
+/**日志信息 */
+var outLogger;// = log4js.getLogger("out");
+/**文件日志 */
+var fileLogger;// = log4js.getLogger("file");
+/** */
+var infoLogger;// = log4js.getLogger("info");
+/**错误信息日志 */
+var errorLogger; //= log4js.getLogger("error")
+
+
 //配置 Console
 var ca: log4js.ConsoleAppender = {
     type: "console"
@@ -49,12 +68,7 @@ let logCfg: log4js.Configuration = {
         error:{appenders: ['error'], level: 'error' },
     }
 }
-
-
-var outLogger// = log4js.getLogger("out");
-var fileLogger// = log4js.getLogger("file");
-var infoLogger// = log4js.getLogger("info");
-var errorLogger //= log4js.getLogger("error");
+;
 
 function log(msg: string, ...args) {
     outLogger && outLogger.debug(msg, args);
@@ -63,35 +77,37 @@ function log(msg: string, ...args) {
     }
 }
 
+/**
+ * 写入日志信息
+ * @param msg 
+ * @param args 
+ */
 function infoLog(msg:string,...args) {
     infoLogger && infoLogger.info(msg,args);
 }
 
+/**
+ * 写入错误信息
+ * @param msg 
+ * @param args 
+ */
 function errorLog(msg:string,...args) {
     errorLogger && errorLogger.error(msg,args);
 }
-
-type ProcessOpts = {
-    process_name:string,
-    process_id:number,
-    appDir:string
-}
-
 /**
- * 
+ * app 启动时初始化log函数
  * @param child_process_opt 子进程的配置修改，如果不传那就是主进程
  */
-function initConfig(child_process_opt?:ProcessOpts){
-
+function initConfig(child_process_opt?:ChildProcessOpt){
+    
     if(child_process_opt) {
         let basePath = child_process_opt.appDir
         logFileAppender.filename = path.resolve(basePath,`./logs/out/${child_process_opt.process_name}_${child_process_opt.process_id}_logOut.log`);
         infoFileAppender.filename = path.resolve(basePath,`./logs/info/info_${child_process_opt.process_name}_${child_process_opt.process_id}`);
         errorFileAppender.filename = path.resolve(basePath,`./logs/err/${child_process_opt.process_name}_${child_process_opt.process_id}_err.log`);
     }
-    
-    log4js.configure(logCfg);
 
+    log4js.configure(logCfg);
     outLogger = log4js.getLogger("out");
     fileLogger = log4js.getLogger("file");
     infoLogger = log4js.getLogger("info");

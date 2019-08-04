@@ -10,15 +10,19 @@ gulp.task("cpDoc", function() {
     );
 });
 
+gulp.task('tsc', function() {
+    return exec('tsc -p ./tsconfig.json');
+})
+
 gulp.task("pb_dev", function(done) {
     return pb();
 })
 
 async function pb() {
-    await exec("tsc -p ./tsconfig.json");
-    await exec("gulp cpDoc");
-    await exec("mkdir -p temp_bp");
-    await exec("zip -q -r -o ./temp_bp/temp.zip ./bin/");
+    await exec("tsc -p ./tsconfig.json"); //编译
+    await exec("gulp cpDoc"); //拷贝配置文件
+    await exec("mkdir -p temp_bp"); //创建打包目录
+    await exec("zip -q -r -o ./temp_bp/temp.zip ./bin/"); //压缩zip 
 }
 
 async function exec(cmd) {

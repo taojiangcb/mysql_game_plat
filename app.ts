@@ -21,7 +21,7 @@ import koaCors = require("koa-cors");
 import { whereStatic } from "sequelize";
 import { ws } from "./src/websocket/WebSocketServer";
 import { platUsersDB } from "./src/mysql_plat_users/PlatUsersDB";
-import { managerInit } from "./src/mgr/Mgr";
+import { managerInit, childProcessMgr } from "./src/mgr/Mgr";
 import { simpleError } from "./src/error/ErrorHandler";
 
 import cluster = require("cluster");
@@ -29,10 +29,13 @@ import cp = require("child_process")
 
 Log.initConfig();
 
+
 var app = new Koa();
 let router = new Router();
 let svrPath: string = "/src/httpServers";
 Define.rootPath = __dirname;
+
+managerInit();
 
 /** * 当node 进程崩溃的时候处理 */
 process.addListener("uncaughtException", (err: Error) => {
@@ -47,6 +50,7 @@ process.addListener("uncaughtException", (err: Error) => {
 /*** 当node 进程退出时候处理 */
 process.addListener("exit", (code: number) => {
     console.log("exit code" + code);
+    childProcessMgr.killAll();
 });
 
 
@@ -84,6 +88,7 @@ process.addListener("uncaughtException", (err: Error) => {
     if (err.stack) {
         Log.errorLog(err.stack);
     }
+    childProcessMgr.killAll();
 })
 
 /**
@@ -109,7 +114,6 @@ for (const key in overrideDefine) {
 
 async function appStart() {
 
-    managerInit();
 
     /** 初始化平台数据库 */
     platDB.mysql_client = await mySqlMgr.createMySql(game_plat_oa_define.opts());
@@ -148,30 +152,38 @@ async function appStart() {
     Log.infoLog(`server runing on port ${Define.port}`);
 }
 
-var cp_map = {}
 function startChildProcess() {
     var ts_path = path.join(__dirname,"src/worker","test_worker.js");
     console.log(`------${ts_path}`);
 
     let env_ = Object.assign({appDir:__dirname},process.env)
-    var childProcess = cp.fork(ts_path,null,
-        {execArgv:[],env:env_,silent:false}
-    );
-    cp_map[childProcess.pid] = childProcess;
-    childProcess.on("error",err=>{
-        Log.log(err.message);
-        Log.log(err.stack);
-    })
-    childProcess.on("exit",(code,signal)=>{
-        Log.log(`exit code:${code},signal:${signal}`);
-    })
-    childProcess.on("close",(code,signal)=>{
-        Log.log(`close code:${code},signal:${signal}`);
-    })
-    childProcess.on("uncaughtException",(err)=>{
-        Log.log(`${err.message} ${JSON.stringify(err)}`);
-    })
+    let forkOpts = {execArgv:[],env:env_,silent:false}
+    let child_opt = {auto_restart:false,receive_mess_call:receive_child_process_msg}
+    childProcessMgr.fork(ts_path,child_opt,[],forkOpts);
+    
+    // cp_map[childProcess.pid] = childProcess;
+    // childProcess.on("error",err=>{
+    //     Log.log(err.message);
+    //     Log.log(err.stack);
+    // })
+
+    // childProcess.on("exit",(code,signal)=>{
+    //     Log.log(`exit code:${code},signal:${signal}`);
+    // })
+
+    // childProcess.on("close",(code,signal)=>{
+    //     Log.log(`close code:${code},signal:${signal}`);
+    // })
+
+    // childProcess.on("message",(message,server)=>{
+    //     Log.log(message);
+    // })
 }
+
+function receive_child_process_msg(message:string) {
+    Log.log(message);
+}
+
 startChildProcess();
 appStart();
 

@@ -7,7 +7,6 @@ import { PlatWxSvr } from "../plat/PlatWxSvr";
 
 export class PlatMgr {
     constructor(){}
-
     getPlatInstance(platId:number):PlatBaseSvr {
         switch(platId) {
             case PlatIds.WX:
