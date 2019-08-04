@@ -24,6 +24,11 @@ import { platUsersDB } from "./src/mysql_plat_users/PlatUsersDB";
 import { managerInit } from "./src/mgr/Mgr";
 import { simpleError } from "./src/error/ErrorHandler";
 
+import cluster = require("cluster");
+import cp = require("child_process")
+
+Log.initConfig();
+
 var app = new Koa();
 let router = new Router();
 let svrPath: string = "/src/httpServers";
@@ -33,11 +38,9 @@ Define.rootPath = __dirname;
 process.addListener("uncaughtException", (err: Error) => {
     if (err.message) {
         Log.errorLog(err.message);
-        console.log(err.message);
     }
     if (err.stack) {
         Log.errorLog(err.stack);
-        console.log(err.stack);
     }
 })
 
@@ -61,11 +64,11 @@ function initHttpServers(): void {
             let funs: string[] = url.split(/\s+/i);
             var method_func:string = funs[0].toLowerCase();
             if(router[method_func]) {
-                console.info(`注入:${url}`);
+                Log.log(`注入:${url}`);
                 router[method_func](funs[1],mapping[url]);
             }
             else {
-                console.log("未知服务:" + url);
+                Log.log("未知服务:" + url);
             }
         }
     });
@@ -76,10 +79,10 @@ function initHttpServers(): void {
  */
 process.addListener("uncaughtException", (err: Error) => {
     if (err.message) {
-        console.log(err.message);
+        Log.errorLog(err.message);
     }
     if (err.stack) {
-        console.log(err.stack);
+        Log.errorLog(err.stack);
     }
 })
 
@@ -87,7 +90,7 @@ process.addListener("uncaughtException", (err: Error) => {
  * 当node 进程退出时候处理
  */
 process.addListener("exit", (code: number) => {
-    console.log("exit code" + code);
+    Log.errorLog("exit code " + code);
 });
 
 var config_path: string = `config_${process.env.NODE_ENV}.json`;
@@ -101,9 +104,8 @@ for (const key in overrideDefine) {
         Define[key] = element;
     }
 }
-console.log(Define);
 
-let testSvr;
+// let testSvr;
 
 async function appStart() {
 
@@ -133,18 +135,92 @@ async function appStart() {
     var redisHelp:RedisHelp = new RedisHelp();          
     await redisHelp.init(redisOpt);
     platRedis.redis_client = redisHelp;
-
     app.on("error",simpleError);
 
+    /**动态注入 http 服务 */
     initHttpServers();
 
     app.use(koaCors({credentials:true}))
     app.use(bodyparser({enableTypes:["json","from","xml"]}))
     app.use(login_validate);
     app.use(router.routes());
-    testSvr = app.listen(Define.port);
+    http.createServer(app.callback).listen(Define.port);
     Log.infoLog(`server runing on port ${Define.port}`);
 }
+
+var cp_map = {}
+function startChildProcess() {
+    var ts_path = path.join(__dirname,"src/worker","test_worker.js");
+    console.log(`------${ts_path}`);
+
+    let env_ = Object.assign({appDir:__dirname},process.env)
+    var childProcess = cp.fork(ts_path,null,
+        {execArgv:[],env:env_,silent:false}
+    );
+    cp_map[childProcess.pid] = childProcess;
+    childProcess.on("error",err=>{
+        Log.log(err.message);
+        Log.log(err.stack);
+    })
+    childProcess.on("exit",(code,signal)=>{
+        Log.log(`exit code:${code},signal:${signal}`);
+    })
+    childProcess.on("close",(code,signal)=>{
+        Log.log(`close code:${code},signal:${signal}`);
+    })
+    childProcess.on("uncaughtException",(err)=>{
+        Log.log(`${err.message} ${JSON.stringify(err)}`);
+    })
+}
+startChildProcess();
 appStart();
 
-module.exports = testSvr;
+// function onListenerFail(worker:cluster.Worker) {
+//     worker.kill();
+//     Log.errorLog(`worker listener fail ${worker.id}`);
+// }
+
+
+// var timerouts = [];
+// if(cluster.isMaster) {
+
+//     var len = 1;
+//     cluster.on("disconnect",worker=>{
+//         Log.infoLog(`工作进程 ${worker.id} 已经断开`);
+//     })
+
+//     cluster.on("fork",worker=>{
+//         timerouts[worker.id] = setTimeout(onListenerFail,2000,worker);
+//     })
+
+//     cluster.on("online",(worker)=>{
+//         Log.infoLog(`工作进程被衍生后响应${worker.id}`)
+//     })
+
+//     cluster.on("listening",(worker,address)=>{
+//         clearTimeout(timerouts[worker.id]);
+//         Log.infoLog(`listening success ${worker.id},address is ${JSON.stringify(address)}`);
+//     })
+
+//     cluster.on("exit",(worker,code,signal)=>{
+//         clearTimeout(timerouts[worker.id]);
+//         if(worker.exitedAfterDisconnect === true) {
+//             Log.infoLog(`process is close by id ${worker.id}`);
+//         }
+//         else {
+//             Log.errorLog('工作进程 %d 关闭 (%s). 重启中...',worker.process.pid, signal || code);
+//             cluster.fork();
+//         }
+//     })
+//     Log.infoLog("begin fork......");
+//     for(var i = 0; i < len; i++) {
+//         cluster.fork();
+//     }
+// }
+// else {
+//     // Log.log("fork process ....");
+//     appStart();
+// }
+
+
+// module.exports = testSvr;

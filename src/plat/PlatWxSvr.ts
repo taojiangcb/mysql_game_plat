@@ -69,8 +69,8 @@ export class PlatWxSvr extends PlatBaseSvr {
 
         /**获取登录的token */
         platUser.loginToken = await this.getLoginToken(userId);
+        
         let loginResp:mgsdk.iPlatLoginResp = { user:platUser }
-
         return new RespBase(true,0,'',loginResp);
         
     }
