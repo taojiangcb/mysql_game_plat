@@ -2,9 +2,9 @@ import { PlatBaseSvr } from "./PlatBaseSvr";
 import { RespBase} from "../RESUL";
 import { platConfigService } from "../controllers/PlatConfigOA";
 import { ERROR_CODE, ERROR_MSG } from "../ErrorCode";
-import { Log } from "../log/Log";
 import { sendUrlRequest } from "../mgr/NetMgr";
 import { platUsersDB } from "../mysql_plat_users/PlatUsersDB";
+import { Log } from "../log/Log";
 const crypto = require("crypto");
 
 export class PlatWxSvr extends PlatBaseSvr {

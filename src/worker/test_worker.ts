@@ -1,5 +1,5 @@
-import { Log } from "../log/Log";
 import path = require("path")
+import { Log } from "../log/Log";
 
 let log_child_opts = {
     process_name:path.parse(__filename).name,

@@ -19,7 +19,6 @@ export class PlatDevSvr extends PlatBaseSvr {
         }
 
         var userId = user + pwd;
-        
         let userDao = platUsersDB.sys_user_dao(userId);
         let userData = await userDao.findOne({where:{ user_id:userId }})
 
@@ -34,7 +33,6 @@ export class PlatDevSvr extends PlatBaseSvr {
         platUser.naickName = userData.nickname;
         platUser.id = userData.user_id;
         platUser.openId = userData.open_id;
-
         loginResp.user = platUser;
 
         return new RespBase(true,0,"",loginResp);

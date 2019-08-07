@@ -1,6 +1,6 @@
 import redis = require("redis");
-import { Log } from "../../log/Log";
 import wrapper = require("co-redis");
+import { Log } from "../../log/Log";
 
 /**
  * Redis 读写助手

@@ -1,5 +1,4 @@
 import { Context } from "koa";
-import { Interface } from "readline";
 
 export class RespBase {
     success: boolean;

@@ -2,7 +2,6 @@ import Koa = require("koa");
 import Router = require("koa-router");
 import fs = require("fs");
 import { IConfig, Define } from "./src/config/Define";
-import { Log } from "./src/log/Log";
 import http = require("http");
 import path = require("path");
 import { mySqlMgr } from "./src/database/mysqlDao/MySqlDBMgr";
@@ -19,15 +18,14 @@ import { login_validate } from "./src/middlewares/login_validate";
 import bodyparser = require("koa-bodyparser");
 import koaCors = require("koa-cors");
 import { whereStatic } from "sequelize";
-import { ws } from "./src/websocket/WebSocketServer";
 import { platUsersDB } from "./src/mysql_plat_users/PlatUsersDB";
 import { managerInit, childProcessMgr } from "./src/mgr/Mgr";
 import { simpleError } from "./src/error/ErrorHandler";
 
 import cluster = require("cluster");
 import cp = require("child_process")
-
-Log.initConfig();
+import { Log } from "./src/log/Log";
+import { SocketServer, WSOpts } from "./src/websocket/SocketServer";
 
 
 var app = new Koa();
@@ -35,16 +33,16 @@ let router = new Router();
 let svrPath: string = "/src/httpServers";
 Define.rootPath = __dirname;
 
+//初始化日志
+Log.initConfig();
+
+/**初始化管理类 */
 managerInit();
 
 /** * 当node 进程崩溃的时候处理 */
 process.addListener("uncaughtException", (err: Error) => {
-    if (err.message) {
-        Log.errorLog(err.message);
-    }
-    if (err.stack) {
-        Log.errorLog(err.stack);
-    }
+    if (err.message) { Log.errorLog(err.message); }
+    if (err.stack) { Log.errorLog(err.stack); }
 })
 
 /*** 当node 进程退出时候处理 */
@@ -82,19 +80,15 @@ function initHttpServers(): void {
  * 当node 进程崩溃的时候处理
  */
 process.addListener("uncaughtException", (err: Error) => {
-    if (err.message) {
-        Log.errorLog(err.message);
-    }
-    if (err.stack) {
-        Log.errorLog(err.stack);
-    }
+    if (err.message) { Log.errorLog(err.message); }
+    if (err.stack) { Log.errorLog(err.stack); }
     childProcessMgr.killAll();
 })
 
 /**
  * 当node 进程退出时候处理
  */
-process.addListener("exit", (code: number) => {
+process.addListener("exit", (code: number) => { 
     Log.errorLog("exit code " + code);
 });
 
@@ -110,10 +104,7 @@ for (const key in overrideDefine) {
     }
 }
 
-// let testSvr;
-
 async function appStart() {
-
 
     /** 初始化平台数据库 */
     platDB.mysql_client = await mySqlMgr.createMySql(game_plat_oa_define.opts());
@@ -135,7 +126,6 @@ async function appStart() {
 
     //var webSocketServer:ws.WebSocketServer = new ws.WebSocketServer();
     //webSocketServer.listenerToServer(app);
-
     var redisHelp:RedisHelp = new RedisHelp();          
     await redisHelp.init(redisOpt);
     platRedis.redis_client = redisHelp;
@@ -152,87 +142,24 @@ async function appStart() {
     Log.infoLog(`server runing on port ${Define.port}`);
 }
 
+
 function startChildProcess() {
     var ts_path = path.join(__dirname,"src/worker","test_worker.js");
     console.log(`------${ts_path}`);
-
     let env_ = Object.assign({appDir:__dirname},process.env)
     let forkOpts = {execArgv:[],env:env_,silent:false}
-    let child_opt = {auto_restart:false,receive_mess_call:receive_child_process_msg}
+    let child_opt = {auto_restart:false,receive_mess_call:message=>{Log.log(message)}}
     childProcessMgr.fork(ts_path,child_opt,[],forkOpts);
-    
-    // cp_map[childProcess.pid] = childProcess;
-    // childProcess.on("error",err=>{
-    //     Log.log(err.message);
-    //     Log.log(err.stack);
-    // })
-
-    // childProcess.on("exit",(code,signal)=>{
-    //     Log.log(`exit code:${code},signal:${signal}`);
-    // })
-
-    // childProcess.on("close",(code,signal)=>{
-    //     Log.log(`close code:${code},signal:${signal}`);
-    // })
-
-    // childProcess.on("message",(message,server)=>{
-    //     Log.log(message);
-    // })
 }
 
-function receive_child_process_msg(message:string) {
-    Log.log(message);
+function startWebSocketSvr() {
+    let opts:WSOpts = {
+        port:3306,
+        check_out_time : 10000
+    }
+    let wsSvr = new SocketServer(opts);
 }
 
-startChildProcess();
 appStart();
-
-// function onListenerFail(worker:cluster.Worker) {
-//     worker.kill();
-//     Log.errorLog(`worker listener fail ${worker.id}`);
-// }
-
-
-// var timerouts = [];
-// if(cluster.isMaster) {
-
-//     var len = 1;
-//     cluster.on("disconnect",worker=>{
-//         Log.infoLog(`工作进程 ${worker.id} 已经断开`);
-//     })
-
-//     cluster.on("fork",worker=>{
-//         timerouts[worker.id] = setTimeout(onListenerFail,2000,worker);
-//     })
-
-//     cluster.on("online",(worker)=>{
-//         Log.infoLog(`工作进程被衍生后响应${worker.id}`)
-//     })
-
-//     cluster.on("listening",(worker,address)=>{
-//         clearTimeout(timerouts[worker.id]);
-//         Log.infoLog(`listening success ${worker.id},address is ${JSON.stringify(address)}`);
-//     })
-
-//     cluster.on("exit",(worker,code,signal)=>{
-//         clearTimeout(timerouts[worker.id]);
-//         if(worker.exitedAfterDisconnect === true) {
-//             Log.infoLog(`process is close by id ${worker.id}`);
-//         }
-//         else {
-//             Log.errorLog('工作进程 %d 关闭 (%s). 重启中...',worker.process.pid, signal || code);
-//             cluster.fork();
-//         }
-//     })
-//     Log.infoLog("begin fork......");
-//     for(var i = 0; i < len; i++) {
-//         cluster.fork();
-//     }
-// }
-// else {
-//     // Log.log("fork process ....");
-//     appStart();
-// }
-
-
-// module.exports = testSvr;
+startWebSocketSvr();
+startChildProcess();

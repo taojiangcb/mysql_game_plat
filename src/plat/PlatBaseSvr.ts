@@ -3,9 +3,9 @@ import { cacheMgr } from "../mgr/Mgr";
 import { platConfigService } from "../controllers/PlatConfigOA";
 import moment = require("moment");
 import { platRedis } from "../redis_clients/PlatRedis";
-import { Log } from "../log/Log";
 import { REDIS_KEY } from "../config/Define";
 import { platUsersDB } from "../mysql_plat_users/PlatUsersDB";
+import { Log } from "../log/Log";
 const uuidv1 = require("uuid");
 const md5Hex = require('md5-hex');
 

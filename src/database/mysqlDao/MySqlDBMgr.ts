@@ -1,6 +1,7 @@
 import sequelize = require("sequelize");
 import { MySqlClient } from "./MySqlClient";
 import { connect } from "tls";
+import { Log } from "../../log/Log";
 
 class MySqlDBMgr {
 
@@ -22,7 +23,9 @@ class MySqlDBMgr {
             await mySqlClient.connection(connectCfg);
         } 
         catch(e) {
-            throw new Error(`mySql 链接失败:${connectCfg.host}:${connectCfg.port}`);
+            var msg:string = `mySql 链接失败:${connectCfg.host}:${connectCfg.port}`; 
+            Log.errorLog(msg);
+            throw new Error(msg);
         }
 
         this.configs[connectCfg.host] = connectCfg;

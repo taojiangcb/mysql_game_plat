@@ -1,12 +1,13 @@
 import cp = require("child_process");
 import { Define } from "../config/Define";
-import { Log } from "../log/Log";
 import path = require("path");
+import { Log } from "../log/Log";
 
 
 type child_opts = {
     auto_restart:boolean,                           //是否自动重启    
     receive_mess_call:(message:string)=>void        //收到消息时的回调处理
+    isOnle?:boolean,                                 //是否唯一 相同的子进程只能启动一个
 }
 
 interface ref_childProcess extends cp.ChildProcess {
@@ -17,9 +18,14 @@ interface ref_childProcess extends cp.ChildProcess {
 
 export class ProcessMgr {
     
-    /** */
+    /**
+     * 被创建的子进程 缓存列表
+     */
     private process_map:Map<string,cp.ChildProcess[]>;
 
+    /**
+     * 创建进程是自定义的参数配置
+     */
     private child_opts_map:Map<string,child_opts>;
 
     constructor(){
@@ -27,10 +33,21 @@ export class ProcessMgr {
         this.child_opts_map = new Map();
     }
 
-    fork(jsPath:string,child_opts:child_opts,args?:string[],forkOpts?:cp.ForkOptions) {
+    /**
+     * 创建子进程      创建成功是返回 true 否则返回false 
+     * @param jsPath                    //执行子进程的执行文件
+     * @param child_opts                //相关的参数配置
+     * @param args                      //fork shell 进程时的参数
+     * @param forkOpts                  //fork 的参数
+     */
+    fork(jsPath:string,child_opts:child_opts,args?:string[],forkOpts?:cp.ForkOptions):boolean {
 
         let pase_dir = path.parse(jsPath);
         let worker_name:string = pase_dir.name;
+
+        if(child_opts.isOnle) {
+            if(this.child_opts_map.get(worker_name)) return false;
+        }
 
         var ref_child_process:ref_childProcess = cp.fork(jsPath,args,forkOpts);   
         ref_child_process.callRef = 0;
@@ -49,6 +66,7 @@ export class ProcessMgr {
 
         Log.log(`fork child_process pid${ref_child_process.pid},jsName:${ref_child_process.jsName}`)
         this.listenerProcess(ref_child_process);
+        return true;
     }
 
     send(jsPath:string,message:string,callBack?:(err:Error)=>void) {
