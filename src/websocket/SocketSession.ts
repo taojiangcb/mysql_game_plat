@@ -50,6 +50,8 @@ export class SocketSession extends EventEmitter {
         }
     }
 
-    private heartbeat():void { this.isAlive = true; }
+    private heartbeat():void { 
+        this.isAlive = true; 
+    }
     get socket() {return this.m_client;}
 }

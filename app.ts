@@ -1,7 +1,7 @@
 import Koa = require("koa");
 import Router = require("koa-router");
 import fs = require("fs");
-import { IConfig, Define } from "./src/config/Define";
+import { IConfig, Define, WS_SERVER } from "./src/config/Define";
 import http = require("http");
 import path = require("path");
 import { mySqlMgr } from "./src/database/mysqlDao/MySqlDBMgr";
@@ -16,7 +16,7 @@ import session = require("koa-session");
 import { login_validate } from "./src/middlewares/login_validate";
 
 import bodyparser = require("koa-bodyparser");
-import koaCors = require("koa-cors");
+const koaCors = require("koa2-cors");
 import { whereStatic } from "sequelize";
 import { platUsersDB } from "./src/mysql_plat_users/PlatUsersDB";
 import { managerInit, childProcessMgr } from "./src/mgr/Mgr";
@@ -26,12 +26,16 @@ import cluster = require("cluster");
 import cp = require("child_process")
 import { Log } from "./src/log/Log";
 import { SocketServer, WSOpts } from "./src/websocket/SocketServer";
+import { HelloController } from "./src/websocket/controller/HelloController";
 
 
 var app = new Koa();
 let router = new Router();
 let svrPath: string = "/src/httpServers";
 Define.rootPath = __dirname;
+
+let httpServer:http.Server = http.createServer(app.callback());
+let wsServer:SocketServer;
 
 //初始化日志
 Log.initConfig();
@@ -131,14 +135,16 @@ async function appStart() {
     platRedis.redis_client = redisHelp;
     app.on("error",simpleError);
 
+
+    /** 先要设置跨域 */
+    app.use(koaCors({credentials:true}));
+    app.use(bodyparser({enableTypes:["json","from"]}))
+    app.use(login_validate);
+
     /**动态注入 http 服务 */
     initHttpServers();
-
-    app.use(koaCors({credentials:true}))
-    app.use(bodyparser({enableTypes:["json","from","xml"]}))
-    app.use(login_validate);
     app.use(router.routes());
-    http.createServer(app.callback).listen(Define.port);
+    httpServer.listen(Define.port);
     Log.infoLog(`server runing on port ${Define.port}`);
 }
 
@@ -154,12 +160,14 @@ function startChildProcess() {
 
 function startWebSocketSvr() {
     let opts:WSOpts = {
-        port:3306,
-        check_out_time : 10000
+        port:Define.wsPort,
+        check_out_time : 1000
     }
-    let wsSvr = new SocketServer(opts);
+
+    wsServer = new SocketServer(opts);
+    wsServer.registerController(WS_SERVER.HELLO,HelloController);
 }
 
 appStart();
 startWebSocketSvr();
-startChildProcess();
+// startChildProcess();

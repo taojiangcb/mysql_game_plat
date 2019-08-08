@@ -61,14 +61,14 @@ async function getPlatInfo_redis(ctx:Context,next) {
 async function getPlatInfo(ctx:Context,next) {
     var body = ctx.request.body;
     var platConfig:ISysPlatConfigDAOAtt[];
-    let {plat,gameId} = body;
+    let {platId,gameId} = body;
 
     let resp:mgsdk.iPlatInfoResp = {}
 
-    if(plat && gameId) {
+    if(platId && gameId) {
         let configItem:ISysPlatConfigDAOAtt = null;
         if(!cacheMgr.isExpired(REDIS_KEY.PLAT_CONFIGS)) {
-            configItem = await platConfigService.getConfigByCache(plat,gameId) as ISysPlatConfigDAOAtt;
+            configItem = await platConfigService.getConfigByCache(platId,gameId) as ISysPlatConfigDAOAtt;
         }
         if(configItem) {
             resp.cli_config = configItem.config;
@@ -79,7 +79,7 @@ async function getPlatInfo(ctx:Context,next) {
             platConfig = await platDB.sysPlatServerConfigDAO.findAll();
             cacheMgr.set(REDIS_KEY.PLAT_CONFIGS,platConfig,60);
             platConfig.forEach(element => {
-                if(gameId === element.game_id && plat === element.plat_id) {
+                if(gameId === element.game_id && platId === element.plat_id) {
                     configItem = element;
                 }
             });

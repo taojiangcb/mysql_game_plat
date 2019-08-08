@@ -49,12 +49,12 @@ export class SocketServer extends EventEmitter {
     /** 注册业务消息处理 */
     registerController<T extends ServerController> (svrName:string, T) {
         let controller:ServerController = new T(svrName);
-        controller.setServerIO(this);
+        controller.serverIO = this;
+        this.controllerMaps.set(svrName,controller);
     }
 
     /** 计时器检查那些 失去心跳的连接 */
     private checkTimeOut():void {
-        
         for(let [k,v] of this.sessionMap) {
             if(v.isAlive === false) return v.socket.terminate();
             v.isAlive = false;
@@ -67,21 +67,29 @@ export class SocketServer extends EventEmitter {
      */
     private createServerIO() {
         this.serverIO = new WebSocket.Server(this.opts);
-        this.serverIO.on("connection",this.connectionHandler);
+        this.serverIO.on("connection",this.connectionHandler.bind(this));
         this.serverIO.on("error",err=>{
             Log.errorLog(`${err.message}, stack:${err.stack}`);
         })
-        this.timeOutChkId = setInterval(this.checkTimeOut,this.opts.check_out_time);
+        this.timeOutChkId = setInterval((...args)=>{
+            for(let [k,v] of this.sessionMap) {
+                if(v.isAlive === false) return v.socket.terminate();
+                v.isAlive = false;
+                v.socket.ping();
+            }
+        },1000);
         Log.log(`start websocket server...`);
     }
 
     private connectionHandler(socket: WebSocket, request: http.IncomingMessage) {
         this.link_count++;
         let session = new SocketSession(socket);
-        this.sessionMap.set(session.clientId,session);
-        
         session.clientId = this.link_count + "__link_id";
         session.isAlive = true;
+
+        this.sessionMap.set(session.clientId,session);
+        /** 告诉客户端当前连接的身份信息 */
+        this.send_client_init(session);
 
         session.socket.on("close",(code,reason)=>{
             Log.infoLog(`this is socket is close by clientId ${session.clientId} code:${code} reason:${reason}`);
@@ -106,6 +114,18 @@ export class SocketServer extends EventEmitter {
                 controller.doAction(session,protocol);
             }
         })
+    }
+
+    /** 客户端当前的连接身份信息 */
+    private send_client_init(session:SocketSession):void {
+        let protocol:mgsdk.iBaseProcotol = {
+            socketId:session.clientId,
+            procoBody:{
+                action:"initClient",
+                server:"__IDENTITY_CONTROLLER__",
+            }
+        }
+        session.send(protocol);
     }
 
     /** 发送到客户端 */

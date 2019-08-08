@@ -33,13 +33,18 @@ export interface IConfig {
             auth_pass:string
         }
     }
-    setting:{}
+    setting:{
+        port:number;
+        wsPort:number;
+    }
 }
 
 export const Define = {
     writeLogFile:true,
     rootPath:"",
-    port:1234,
+    port:3005,
+    wsPort:3306
+
 }
 
 export const PlatIds = {
@@ -86,4 +91,12 @@ export var SDK_MODE = {
     DEBUG:0,                    //开发
     TEST:1,                     //线上测试
     ONLINE:2,                   //线上生产
+}
+
+export const enum WS_SERVER {
+    HELLO = "HELLO"
+}
+
+export const enum WS_ACTION {
+    SAY_HELLO = "say_hello"
 }

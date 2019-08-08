@@ -11,14 +11,19 @@ export class PlatDevSvr extends PlatBaseSvr {
 
     async login(ctx:Context) { 
         var body = ctx.request.body;
-        let {user,pwd,platId,gameId} = body;
+        let {platId,gameId} = body;
+        let {testUser,testPwd} = body.platUser;
 
+        if(!testUser || !testPwd || !platId || !gameId) {
+            return new RespBase(false,ERROR_CODE.ERROR_5000,ERROR_MSG.ERROR_5000);
+        }
+        
         let platConfig = await platConfigService.getConfigByCache(platId,gameId);
         if(!platConfig) {
             return new RespBase(false,ERROR_CODE.PLAT_INFO_6001,ERROR_MSG.PLAT_INFO_6001);
         }
 
-        var userId = user + pwd;
+        var userId = testUser + testPwd;
         let userDao = platUsersDB.sys_user_dao(userId);
         let userData = await userDao.findOne({where:{ user_id:userId }})
 
@@ -26,7 +31,7 @@ export class PlatDevSvr extends PlatBaseSvr {
         let platUser:mgsdk.iPlatUser = {};
 
         if(!userData) {
-            userData = await userDao.create({user_id:userId,avatar:"",nickname:user,plat_id:platId,game_id:gameId,open_id:user});
+            userData = await userDao.create({user_id:userId,avatar:"",nickname:testUser,plat_id:platId,game_id:gameId,open_id:testUser});
         }
 
         platUser.avatar = userData.avatar;

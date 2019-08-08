@@ -20,17 +20,18 @@ export class ServerController extends EventEmitter {
     }
 
     /** 设置 webSocket 服务 */
-    setServerIO(svr:SocketServer):void { this.m_serverIO = svr;}
-    getServerIO() { return this.m_serverIO; }
+    set serverIO(svr:SocketServer) { this.m_serverIO = svr;}
+    get serverIO() { return this.m_serverIO; }
 
     /**
      * 
-     * @param session 注意处理 protocol.askId 业务逻辑处理完了之后需要传回去
+     * 对应的业务处理 protocol.procoBody.body.askId 业务逻辑处理完了之后需要传回去
+     * @param session 
      * @param protocol 
      */
     doAction(session:SocketSession,protocol:mgsdk.iBaseProcotol) {
         let method = protocol.procoBody.action;
         let call:Function = this[method];
-        call && call.apply(this,protocol);
+        call && call.call(this,session,protocol);
     }
 }

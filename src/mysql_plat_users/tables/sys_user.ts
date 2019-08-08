@@ -26,7 +26,7 @@ export interface sys_user_attrs {
 export interface sys_user_table extends Instance<sys_user_attrs>,sys_user_attrs {}
 
 export var column:sequelize.DefineAttributes = {
-    id: { type: sequelize.INTEGER(11), primaryKey: true, allowNull: false },
+    id: { type: sequelize.INTEGER(11), primaryKey: true, allowNull: true },
     user_id: { type: sequelize.STRING(64), allowNull: false },
     open_id: { type: sequelize.INTEGER(11), allowNull: false },
     game_id: { type: sequelize.INTEGER(11), allowNull: false },
