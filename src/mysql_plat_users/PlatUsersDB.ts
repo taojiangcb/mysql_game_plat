@@ -1,10 +1,10 @@
 import { MySqlClient } from "../database/mysqlDao/MySqlClient";
 import { sys_user_table,sys_user_attrs} from "./tables/sys_user";
 import { SysTool } from "../util/tools";
-import { config } from "../../app";
 import { TABLE_NAME } from "../mysql_define/MySqlDefine";
 import { sys_user_login_table, sys_user_login_attrs } from "./tables/sys_user_login";
 import { sys_order_table, sys_order_attrs } from "./tables/sys_order";
+import { config } from "../../config";
 
 
 class PlatUsersDB {

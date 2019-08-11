@@ -101,7 +101,7 @@ function errorLog(msg:string,...args) {
 function initConfig(child_process_opt?:ChildProcessOpt){
     
     if(child_process_opt) {
-        let basePath = child_process_opt.appDir
+        let basePath = child_process_opt.appDir;
         logFileAppender.filename = path.resolve(basePath,`./logs/out/${child_process_opt.process_name}_${child_process_opt.process_id}_logOut.log`);
         infoFileAppender.filename = path.resolve(basePath,`./logs/info/info_${child_process_opt.process_name}_${child_process_opt.process_id}`);
         errorFileAppender.filename = path.resolve(basePath,`./logs/err/${child_process_opt.process_name}_${child_process_opt.process_id}_err.log`);

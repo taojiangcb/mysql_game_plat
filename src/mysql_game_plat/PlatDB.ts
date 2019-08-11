@@ -9,7 +9,7 @@ import { iSys_plat_log_table, iSys_plat_log_atts } from "./tables/sys_plat_log";
 import { sys_admin_table, sys_admin_attr } from "./tables/sys_admins";
 import { sys_user_table,sys_user_attrs} from "../mysql_plat_users/tables/sys_user";
 import { SysTool } from "../util/tools";
-import { config } from "../../app";
+import { config } from "../../config";
 
 
 class PlatDB {

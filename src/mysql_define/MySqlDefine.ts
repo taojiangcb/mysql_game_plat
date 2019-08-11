@@ -1,5 +1,5 @@
 import { Options } from "sequelize";
-import { config } from "../../app";
+import { config } from "../../config";
 
 
 export const TABLE_NAME = {
