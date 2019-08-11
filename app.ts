@@ -27,7 +27,8 @@ import cp = require("child_process")
 import { Log } from "./src/log/Log";
 import { SocketServer, WSOpts } from "./src/websocket/SocketServer";
 import { HelloController } from "./src/websocket/controller/HelloController";
-
+import { config } from "./config";
+import os = require("os");
 
 var app = new Koa();
 let router = new Router();
@@ -37,11 +38,56 @@ Define.rootPath = __dirname;
 let httpServer:http.Server = http.createServer(app.callback());
 let wsServer:SocketServer;
 
-//初始化日志
-Log.initConfig();
+/**
+ * 启用多进程共享网络端口
+ */
+var mutileProcessStart = function() {
+    if(cluster.isMaster) {
+        //初始化日志
+        Log.initConfig();
+        /**初始化管理类 */
+        managerInit();
+        //startWebSocketSvr();
+        //startChildProcess();
+        cluster.on("online", worker => { console.log('工作进程被衍生后响应'); })
+        cluster.on('listening', (worker, address) => {
+            console.log(`工作进程已连接到 ${address.address}:${address.port}`);
+        });
+    
+        const timeouts = [];
+        function errorMsg() { console.error('连接出错');}
+        cluster.on('fork', (worker) => {timeouts[worker.id] = setTimeout(errorMsg, 10000);});
+        cluster.on('listening', (worker, address) => {clearTimeout(timeouts[worker.id]);});
+        cluster.on('exit', (worker, code, signal) => {
+            clearTimeout(timeouts[worker.id]);
+            errorMsg();
+        });
+        //cpu 的个数
+        let len = os.cpus().length;
+        for(var i = 0; i < len; i++) { cluster.fork(); }
+    }
+    else {
+        //初始化日志
+        Log.initConfig({process_id:process.pid,process_name:"koa-server",appDir:__dirname});
+        /**初始化管理类 */
+        managerInit();
+        httpSvrStart();
+    }
+}
 
-/**初始化管理类 */
-managerInit();
+/**
+ * 单进程启动服务
+ */
+var signleProcessStart = function() {
+    //初始化日志
+    Log.initConfig();
+    /**初始化管理类 */
+    managerInit();
+    httpSvrStart();
+}
+
+var appStart = signleProcessStart;
+appStart();
 
 /** * 当node 进程崩溃的时候处理 */
 process.addListener("uncaughtException", (err: Error) => {
@@ -96,19 +142,20 @@ process.addListener("exit", (code: number) => {
     Log.errorLog("exit code " + code);
 });
 
-var config_path: string = `config_${process.env.NODE_ENV}.json`;
-export var config: IConfig = JSON.parse(fs.readFileSync(__dirname + '/' + config_path).toString());
 
+/*** 初始化化参数配置 ========================*/
+var conf: IConfig = config;
 var define_pro = Define;
-var overrideDefine = Object.assign(define_pro, config.setting);
+var overrideDefine = Object.assign(define_pro, conf.setting);
 for (const key in overrideDefine) {
     if (overrideDefine.hasOwnProperty(key)) {
         const element = overrideDefine[key];
         Define[key] = element;
     }
 }
+/*** 初始化化参数配置 end ========================*/
 
-async function appStart() {
+async function httpSvrStart() {
 
     /** 初始化平台数据库 */
     platDB.mysql_client = await mySqlMgr.createMySql(game_plat_oa_define.opts());
@@ -122,10 +169,10 @@ async function appStart() {
 
     /**Redis  */
     var redisOpt:redis.ClientOpts = {
-        host:config.redis.ip,
-        port:config.redis.port,
-        auth_pass:config.redis.flag.auth_pass,
-        db:config.redis.select
+        host:conf.redis.ip,
+        port:conf.redis.port,
+        auth_pass:conf.redis.flag.auth_pass,
+        db:conf.redis.select
     }
 
     //var webSocketServer:ws.WebSocketServer = new ws.WebSocketServer();
@@ -134,7 +181,6 @@ async function appStart() {
     await redisHelp.init(redisOpt);
     platRedis.redis_client = redisHelp;
     app.on("error",simpleError);
-
 
     /** 先要设置跨域 */
     app.use(koaCors({credentials:true}));
@@ -149,6 +195,7 @@ async function appStart() {
 }
 
 
+/** * 启动其他辅助线程 */
 function startChildProcess() {
     var ts_path = path.join(__dirname,"src/worker","test_worker.js");
     console.log(`------${ts_path}`);
@@ -158,16 +205,12 @@ function startChildProcess() {
     childProcessMgr.fork(ts_path,child_opt,[],forkOpts);
 }
 
+/**启动webSocket 服务 */
 function startWebSocketSvr() {
     let opts:WSOpts = {
         port:Define.wsPort,
         check_out_time : 1000
     }
-
     wsServer = new SocketServer(opts);
     wsServer.registerController(WS_SERVER.HELLO,HelloController);
 }
-
-appStart();
-startWebSocketSvr();
-// startChildProcess();
